@@ -4,23 +4,30 @@ import (
 	"testing"
 )
 
-func TestGetRunDistance(t *testing.T) {
+func TestRun(t *testing.T) {
 	cases := []struct {
 		Description string
 		Run         Run
-		Want        string
+		DistWant    string
+		TimeWant    RunTime
 	}{
-		{"1Km Run", Run{1}, "1km"},
-		{"1Km Run", Run{5}, "5km"},
-		{"1Km Run", Run{10}, "10km"},
-		{"1Km Run", Run{100}, "100km"},
+		{"1Km Run", Run{1, RunTime{0, 4, 1}}, "1km", RunTime{0, 4, 1}},
+		{"5Km Run", Run{5, RunTime{0, 34, 1}}, "5km", RunTime{0, 34, 1}},
+		{"10Km Run", Run{10, RunTime{1, 4, 1}}, "10km", RunTime{1, 4, 1}},
+		{"100Km Run", Run{100, RunTime{36, 4, 1}}, "100km", RunTime{36, 4, 1}},
 	}
 
 	for _, test := range cases {
-		t.Run(test.Description, func(t *testing.T) {
+		t.Run(test.Description+"Dist", func(t *testing.T) {
 			got := GetRunDistanceKm(test.Run)
-			if got != test.Want {
-				t.Errorf("got %q want %q", got, test.Want)
+			if got != test.DistWant {
+				t.Errorf("got %q want %q", got, test.DistWant)
+			}
+		})
+		t.Run(test.Description+"Time", func(t *testing.T) {
+			got := GetRunTime(test.Run)
+			if got != test.TimeWant {
+				t.Errorf("got %v want %v", got, test.TimeWant)
 			}
 		})
 	}
