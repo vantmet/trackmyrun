@@ -29,11 +29,13 @@ func GetRunPace(r Run) string {
 
 	if r.Distance > 0 {
 		// Pace is minutes per Km.
+		// Calculate total time in secs (no division needed)
 		timeInSecs := float64(r.RunTime.Seconds)
 		timeInSecs += float64(r.RunTime.Minutes * 60)
 		timeInSecs += float64(r.RunTime.Hours * 60 * 60)
 
-		pace := timeInSecs / float64(r.Distance)
+		pace := timeInSecs / float64(r.Distance) // pace in secs/km
+		//divide pace by 60 to give pace in min.
 		return strconv.FormatFloat(pace/60, 'f', 2, 64)
 	} else {
 		return "Invalid Distance"
