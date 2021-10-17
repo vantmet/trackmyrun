@@ -1,6 +1,8 @@
 package main
 
-import "strconv"
+import (
+	"strconv"
+)
 
 type RunTime struct {
 	Hours   int
@@ -19,4 +21,14 @@ func GetRunDistanceKm(r Run) string {
 
 func GetRunTime(r Run) RunTime {
 	return r.RunTime
+}
+
+func GetRunPace(r Run) string {
+	// Pace is minutes per Km.
+	timeInSecs := float64(r.RunTime.Seconds)
+	timeInSecs += float64(r.RunTime.Minutes * 60)
+	timeInSecs += float64(r.RunTime.Hours * 60 * 60)
+
+	pace := timeInSecs / float64(r.Distance)
+	return strconv.FormatFloat(pace/60, 'f', 2, 64)
 }
