@@ -12,6 +12,8 @@ func TestRun(t *testing.T) {
 		TimeWant    RunTime
 		PaceWant    string
 	}{
+		{"0Km Run", Run{0, RunTime{0, 4, 1}}, "0km", RunTime{0, 4, 1}, "Invalid Distance"},
+		{"-10Km Run", Run{-10, RunTime{0, 4, 1}}, "-10km", RunTime{0, 4, 1}, "Invalid Distance"},
 		{"1Km Run", Run{1, RunTime{0, 4, 1}}, "1km", RunTime{0, 4, 1}, "4.02"},
 		{"5Km Run", Run{5, RunTime{0, 34, 1}}, "5km", RunTime{0, 34, 1}, "6.80"},
 		{"10Km Run", Run{10, RunTime{1, 4, 1}}, "10km", RunTime{1, 4, 1}, "6.40"},

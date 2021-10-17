@@ -24,11 +24,17 @@ func GetRunTime(r Run) RunTime {
 }
 
 func GetRunPace(r Run) string {
-	// Pace is minutes per Km.
-	timeInSecs := float64(r.RunTime.Seconds)
-	timeInSecs += float64(r.RunTime.Minutes * 60)
-	timeInSecs += float64(r.RunTime.Hours * 60 * 60)
 
-	pace := timeInSecs / float64(r.Distance)
-	return strconv.FormatFloat(pace/60, 'f', 2, 64)
+	if r.Distance > 0 {
+		// Pace is minutes per Km.
+		timeInSecs := float64(r.RunTime.Seconds)
+		timeInSecs += float64(r.RunTime.Minutes * 60)
+		timeInSecs += float64(r.RunTime.Hours * 60 * 60)
+
+		pace := timeInSecs / float64(r.Distance)
+		return strconv.FormatFloat(pace/60, 'f', 2, 64)
+	} else {
+		return "Invalid Distance"
+	}
+
 }
