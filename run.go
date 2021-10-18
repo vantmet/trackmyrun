@@ -2,6 +2,7 @@ package main
 
 import (
 	"strconv"
+	"time"
 )
 
 type RunTime struct {
@@ -11,6 +12,7 @@ type RunTime struct {
 }
 
 type Run struct {
+	Date     time.Time
 	Distance int //All distances stored in km.
 	RunTime  RunTime
 }
@@ -37,4 +39,8 @@ func GetRunPace(r Run) string {
 		return "Invalid Distance"
 	}
 
+}
+
+func GetRunDate(r Run) time.Time {
+	return r.Date
 }
