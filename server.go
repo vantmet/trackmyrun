@@ -1,8 +1,18 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
+	"text/template"
 )
 
-func RunnerServer(w http.ResponseWriter, r *http.Request) { fmt.Fprint(w, "Latest Runs") }
+func RunnerServer(w http.ResponseWriter, r *http.Request) {
+	data := struct {
+		PageTitle string
+	}{
+		PageTitle: "My Latest Runs",
+	}
+	t, _ := template.ParseFiles("html\\GetLatest.html")
+
+	t.Execute(w, data)
+
+}

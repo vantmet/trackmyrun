@@ -3,6 +3,7 @@ package main
 import (
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 )
 
@@ -15,7 +16,7 @@ func TestGETRuns(t *testing.T) {
 	got := response.Body.String()
 	want := "Latest Runs"
 
-	if got != want {
+	if !strings.Contains(got, want) {
 		t.Errorf("got %q, want %q", got, want)
 	}
 }
