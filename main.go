@@ -1,5 +1,11 @@
 package main
 
-import "fmt"
+import (
+	"log"
+	"net/http"
+)
 
-func main() { fmt.Println("Hello, World.") }
+func main() {
+	handler := http.HandlerFunc(RunnerServer)
+	log.Fatal(http.ListenAndServe(":5000", handler))
+}
