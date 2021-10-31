@@ -28,25 +28,25 @@ func TestRun(t *testing.T) {
 
 	for _, test := range cases {
 		t.Run(test.Description+"Date", func(t *testing.T) {
-			got := GetRunDate(test.Run)
+			got := test.Run.GetRunDate()
 			if got != test.DateWant {
 				t.Errorf("got %q want %v", got, test.DateWant)
 			}
 		})
 		t.Run(test.Description+"Dist", func(t *testing.T) {
-			got := GetRunDistanceKm(test.Run)
+			got := test.Run.GetRunDistanceKm()
 			if got != test.DistWant {
 				t.Errorf("got %q want %q", got, test.DistWant)
 			}
 		})
 		t.Run(test.Description+"Time", func(t *testing.T) {
-			got := GetRunTime(test.Run)
+			got := test.Run.GetRunTime()
 			if got != test.TimeWant {
 				t.Errorf("got %v want %v", got, test.TimeWant)
 			}
 		})
 		t.Run(test.Description+"Pace", func(t *testing.T) {
-			got := GetRunPace(test.Run)
+			got := test.Run.GetRunPace()
 			if got != test.PaceWant {
 				t.Errorf("got %q want %q", got, test.PaceWant)
 			}
