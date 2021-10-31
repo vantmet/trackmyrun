@@ -18,7 +18,7 @@ type Run struct {
 	RunTime  RunTime
 }
 
-func GetRunDistanceKm(r Run) string {
+func (r Run) GetRunDistanceKm() string {
 	if math.Floor(float64(r.Distance)) != float64(r.Distance) {
 		return strconv.FormatFloat(float64(r.Distance), 'f', 2, 32) + "km"
 	} else {
@@ -26,11 +26,11 @@ func GetRunDistanceKm(r Run) string {
 	}
 }
 
-func GetRunTime(r Run) RunTime {
+func (r Run) GetRunTime() RunTime {
 	return r.RunTime
 }
 
-func GetRunPace(r Run) string {
+func (r Run) GetRunPace() string {
 
 	if r.Distance > 0 {
 		// Pace is minutes per Km.
@@ -48,6 +48,6 @@ func GetRunPace(r Run) string {
 
 }
 
-func GetRunDate(r Run) time.Time {
+func (r Run) GetRunDate() time.Time {
 	return r.Date
 }
