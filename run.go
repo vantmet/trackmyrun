@@ -1,6 +1,7 @@
 package main
 
 import (
+	"math"
 	"strconv"
 	"time"
 )
@@ -13,12 +14,16 @@ type RunTime struct {
 
 type Run struct {
 	Date     time.Time
-	Distance int //All distances stored in km.
+	Distance float32 //All distances stored in km.
 	RunTime  RunTime
 }
 
 func GetRunDistanceKm(r Run) string {
-	return strconv.Itoa(r.Distance) + "km"
+	if math.Floor(float64(r.Distance)) != float64(r.Distance) {
+		return strconv.FormatFloat(float64(r.Distance), 'f', 2, 32) + "km"
+	} else {
+		return strconv.FormatFloat(float64(r.Distance), 'f', 0, 32) + "km"
+	}
 }
 
 func GetRunTime(r Run) RunTime {
