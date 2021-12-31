@@ -47,13 +47,10 @@ func TestGETRuns(t *testing.T) {
 	})
 	t.Run("Contains a run", func(t *testing.T) {
 		got := response.Body.String()
-		want := "<td>2013-02-03 00:00:00 +0000 UTC</td>\r\n                <td>5.42km</td>\r\n                <td>{0 34 52}</td>\r\n                <td>6.43</td>\r\n"
+		want := "<td>2013-Feb-03</td>\r\n                <td>5.42km</td>\r\n                <td>{0 34 52}</td>\r\n                <td>6.43</td>\r\n"
 
 		if !strings.Contains(got, want) {
 			t.Errorf("got %q, want %q", got, want)
 		}
 	})
-	//TODO GetRunTime should return a properly formatted string.
-
-	//TODO GetRunDate should return 2021-10-31
 }
