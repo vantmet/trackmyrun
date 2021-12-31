@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"math"
 	"strconv"
 	"time"
@@ -28,6 +29,10 @@ func (r Run) GetRunDistanceKm() string {
 
 func (r Run) GetRunTime() RunTime {
 	return r.RunTime
+}
+
+func (r Run) GetRunTimeString() string {
+	return fmt.Sprint(r.RunTime.Hours, ":", r.RunTime.Minutes, ":", r.RunTime.Seconds)
 }
 
 func (r Run) GetRunPace() string {
