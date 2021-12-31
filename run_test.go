@@ -7,7 +7,7 @@ import (
 
 func TestRun(t *testing.T) {
 	const shortForm = "2006-Jan-02"
-	dateGot, _ := time.Parse(shortForm, "2013-Feb-03")
+	dateSet, _ := time.Parse(shortForm, "2013-Feb-03")
 	dateWant := "2013-Feb-03"
 
 	cases := []struct {
@@ -18,18 +18,18 @@ func TestRun(t *testing.T) {
 		PaceWant    string
 		DateWant    string
 	}{
-		{"0Km Run", Run{dateGot, 0, RunTime{0, 4, 1}}, "0km", RunTime{0, 4, 1}, "Invalid Distance", dateWant},
-		{"-10Km Run", Run{dateGot, -10, RunTime{0, 4, 1}}, "-10km", RunTime{0, 4, 1}, "Invalid Distance", dateWant},
-		{"1Km Run", Run{dateGot, 1, RunTime{0, 4, 1}}, "1km", RunTime{0, 4, 1}, "4.02", dateWant},
-		{"5Km Run", Run{dateGot, 5, RunTime{0, 34, 1}}, "5km", RunTime{0, 34, 1}, "6.80", dateWant},
-		{"5Km Run", Run{dateGot, 5.42, RunTime{0, 34, 52}}, "5.42km", RunTime{0, 34, 52}, "6.43", dateWant},
-		{"10Km Run", Run{dateGot, 10, RunTime{1, 4, 1}}, "10km", RunTime{1, 4, 1}, "6.40", dateWant},
-		{"100Km Run", Run{dateGot, 100, RunTime{36, 4, 1}}, "100km", RunTime{36, 4, 1}, "21.64", dateWant},
+		{"0Km Run", Run{dateSet, 0, RunTime{0, 4, 1}}, "0km", RunTime{0, 4, 1}, "Invalid Distance", dateWant},
+		{"-10Km Run", Run{dateSet, -10, RunTime{0, 4, 1}}, "-10km", RunTime{0, 4, 1}, "Invalid Distance", dateWant},
+		{"1Km Run", Run{dateSet, 1, RunTime{0, 4, 1}}, "1km", RunTime{0, 4, 1}, "4.02", dateWant},
+		{"5Km Run", Run{dateSet, 5, RunTime{0, 34, 1}}, "5km", RunTime{0, 34, 1}, "6.80", dateWant},
+		{"5Km Run", Run{dateSet, 5.42, RunTime{0, 34, 52}}, "5.42km", RunTime{0, 34, 52}, "6.43", dateWant},
+		{"10Km Run", Run{dateSet, 10, RunTime{1, 4, 1}}, "10km", RunTime{1, 4, 1}, "6.40", dateWant},
+		{"100Km Run", Run{dateSet, 100, RunTime{36, 4, 1}}, "100km", RunTime{36, 4, 1}, "21.64", dateWant},
 	}
 
 	for _, test := range cases {
-		t.Run(test.Description+"Date", func(t *testing.T) {
-			got := test.Run.GetRunDate()
+		t.Run(test.Description+"DateString", func(t *testing.T) {
+			got := test.Run.GetRunDateString()
 			if got != test.DateWant {
 				t.Errorf("got %q want %v", got, test.DateWant)
 			}

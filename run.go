@@ -48,7 +48,7 @@ func (r Run) GetRunPace() string {
 
 }
 
-func (r Run) GetRunDate() string {
+func (r Run) GetRunDateString() string {
 	const shortForm = "2006-Jan-02"
 
 	return r.Date.Format(shortForm)
