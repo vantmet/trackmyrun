@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>{{.PageTitle}}</title>
+	</head>
+	<body>
+        <h1>Latest Runs</h1>
+        <table>
+            <tr>
+                <th>Date</th>
+                <th>Distance</th>
+                <th>Time</th>
+                <th>Pace</th>
+            </tr>
+            {{range .Runs}}
+            <tr>
+                <td>{{.GetRunDateString}}</td>
+                <td>{{.GetRunDistanceKm}}</td>
+                <td>{{.GetRunTimeString}}</td>
+                <td>{{.GetRunPace}}</td>
+            </tr>
+            {{end}}
+        </table>
+	</body>
+</html>

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"math"
 	"strconv"
 	"time"
@@ -30,6 +31,10 @@ func (r Run) GetRunTime() RunTime {
 	return r.RunTime
 }
 
+func (r Run) GetRunTimeString() string {
+	return fmt.Sprint(r.RunTime.Hours, ":", r.RunTime.Minutes, ":", r.RunTime.Seconds)
+}
+
 func (r Run) GetRunPace() string {
 
 	if r.Distance > 0 {
@@ -48,6 +53,8 @@ func (r Run) GetRunPace() string {
 
 }
 
-func (r Run) GetRunDate() time.Time {
-	return r.Date
+func (r Run) GetRunDateString() string {
+	const shortForm = "2006-Jan-02"
+
+	return r.Date.Format(shortForm)
 }
