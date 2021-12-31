@@ -6,5 +6,21 @@
 	</head>
 	<body>
         <h1>Latest Runs</h1>
+        <table>
+            <tr>
+                <th>Date</th>
+                <th>Distance</th>
+                <th>Time</th>
+                <th>Pace</th>
+            </tr>
+            {{range .Runs}}
+            <tr>
+                <td>{{.GetRunDate}}</td>
+                <td>{{.GetRunDistanceKm}}</td>
+                <td>{{.GetRunTime}}</td>
+                <td>{{.GetRunPace}}</td>
+            </tr>
+            {{end}}
+        </table>
 	</body>
 </html>
