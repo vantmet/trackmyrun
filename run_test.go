@@ -19,8 +19,8 @@ func TestRun(t *testing.T) {
 		PaceWant       string
 		DateWant       string
 	}{
-		{"0Km Run", Run{dateSet, 0, RunTime{0, 4, 1}}, "0km", RunTime{0, 4, 1}, "0:4:1", "Invalid Distance", dateWant},
-		{"-10Km Run", Run{dateSet, -10, RunTime{0, 4, 1}}, "-10km", RunTime{0, 4, 1}, "0:4:1", "Invalid Distance", dateWant},
+		{"0Km Run", Run{dateSet, 0, RunTime{0, 4, 1}}, "Invalid Distance", RunTime{0, 4, 1}, "0:4:1", "Invalid Distance", dateWant},
+		{"-10Km Run", Run{dateSet, -10, RunTime{0, 4, 1}}, "Invalid Distance", RunTime{0, 4, 1}, "0:4:1", "Invalid Distance", dateWant},
 		{"1Km Run", Run{dateSet, 1, RunTime{0, 4, 1}}, "1km", RunTime{0, 4, 1}, "0:4:1", "4.02", dateWant},
 		{"5Km Run", Run{dateSet, 5, RunTime{0, 34, 1}}, "5km", RunTime{0, 34, 1}, "0:34:1", "6.80", dateWant},
 		{"5Km Run", Run{dateSet, 5.42, RunTime{0, 34, 52}}, "5.42km", RunTime{0, 34, 52}, "0:34:52", "6.43", dateWant},
@@ -72,8 +72,8 @@ func TestPlanRun(t *testing.T) {
 		DistWant    string
 		DateWant    string
 	}{
-		//{"0Km Run", PlanRun{dateSet, 0}, "Invalid Distance", dateWant},
-		//{"-10Km Run", PlanRun{dateSet, -10}, "Invalid Distance", dateWant},
+		{"0Km Run", PlanRun{dateSet, 0}, "Invalid Distance", dateWant},
+		{"-10Km Run", PlanRun{dateSet, -10}, "Invalid Distance", dateWant},
 		{"1Km Run", PlanRun{dateSet, 1}, "1km", dateWant},
 		{"5Km Run", PlanRun{dateSet, 5}, "5km", dateWant},
 		{"5Km Run", PlanRun{dateSet, 5.42}, "5.42km", dateWant},

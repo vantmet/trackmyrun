@@ -24,20 +24,25 @@ type PlanRun struct {
 	Distance float32 //All distances stored in km.
 }
 
-func (r Run) GetRunDistanceKm() string {
-	if math.Floor(float64(r.Distance)) != float64(r.Distance) {
-		return strconv.FormatFloat(float64(r.Distance), 'f', 2, 32) + "km"
+func GetDistanceKm(d float64) string {
+	if d <= 0 {
+		return "Invalid Distance"
 	} else {
-		return strconv.FormatFloat(float64(r.Distance), 'f', 0, 32) + "km"
+		if math.Floor(d) != d {
+			return strconv.FormatFloat(d, 'f', 2, 32) + "km"
+		} else {
+			return strconv.FormatFloat(d, 'f', 0, 32) + "km"
+		}
 	}
 }
 
+func (r Run) GetRunDistanceKm() string {
+
+	return GetDistanceKm(float64(r.Distance))
+}
+
 func (r PlanRun) GetRunDistanceKm() string {
-	if math.Floor(float64(r.Distance)) != float64(r.Distance) {
-		return strconv.FormatFloat(float64(r.Distance), 'f', 2, 32) + "km"
-	} else {
-		return strconv.FormatFloat(float64(r.Distance), 'f', 0, 32) + "km"
-	}
+	return GetDistanceKm(float64(r.Distance))
 }
 
 func (r Run) GetRunTime() RunTime {
