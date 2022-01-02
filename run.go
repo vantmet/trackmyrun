@@ -19,7 +19,20 @@ type Run struct {
 	RunTime  RunTime
 }
 
+type PlanRun struct {
+	Date     time.Time
+	Distance float32 //All distances stored in km.
+}
+
 func (r Run) GetRunDistanceKm() string {
+	if math.Floor(float64(r.Distance)) != float64(r.Distance) {
+		return strconv.FormatFloat(float64(r.Distance), 'f', 2, 32) + "km"
+	} else {
+		return strconv.FormatFloat(float64(r.Distance), 'f', 0, 32) + "km"
+	}
+}
+
+func (r PlanRun) GetRunDistanceKm() string {
 	if math.Floor(float64(r.Distance)) != float64(r.Distance) {
 		return strconv.FormatFloat(float64(r.Distance), 'f', 2, 32) + "km"
 	} else {
@@ -54,6 +67,12 @@ func (r Run) GetRunPace() string {
 }
 
 func (r Run) GetRunDateString() string {
+	const shortForm = "2006-Jan-02"
+
+	return r.Date.Format(shortForm)
+}
+
+func (r PlanRun) GetRunDateString() string {
 	const shortForm = "2006-Jan-02"
 
 	return r.Date.Format(shortForm)

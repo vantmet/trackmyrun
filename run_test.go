@@ -61,3 +61,38 @@ func TestRun(t *testing.T) {
 		})
 	}
 }
+func TestPlanRun(t *testing.T) {
+	const shortForm = "2006-Jan-02"
+	dateSet, _ := time.Parse(shortForm, "2013-Feb-03")
+	dateWant := "2013-Feb-03"
+
+	cases := []struct {
+		Description string
+		PlanRun     PlanRun
+		DistWant    string
+		DateWant    string
+	}{
+		//{"0Km Run", PlanRun{dateSet, 0}, "Invalid Distance", dateWant},
+		//{"-10Km Run", PlanRun{dateSet, -10}, "Invalid Distance", dateWant},
+		{"1Km Run", PlanRun{dateSet, 1}, "1km", dateWant},
+		{"5Km Run", PlanRun{dateSet, 5}, "5km", dateWant},
+		{"5Km Run", PlanRun{dateSet, 5.42}, "5.42km", dateWant},
+		{"10Km Run", PlanRun{dateSet, 10}, "10km", dateWant},
+		{"100Km Run", PlanRun{dateSet, 100}, "100km", dateWant},
+	}
+
+	for _, test := range cases {
+		t.Run(test.Description+"DateString", func(t *testing.T) {
+			got := test.PlanRun.GetRunDateString()
+			if got != test.DateWant {
+				t.Errorf("got %q want %v", got, test.DateWant)
+			}
+		})
+		t.Run(test.Description+"Dist", func(t *testing.T) {
+			got := test.PlanRun.GetRunDistanceKm()
+			if got != test.DistWant {
+				t.Errorf("got %q want %q", got, test.DistWant)
+			}
+		})
+	}
+}
