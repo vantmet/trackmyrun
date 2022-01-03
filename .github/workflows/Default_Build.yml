@@ -16,10 +16,7 @@ jobs:
     - name: Set up Go
       uses: actions/setup-go@v2
       with:
-        go-version: 1.16
-
-    - name: Build
-      run: go build -v ./...
+        go-version: 1.17
       
     - name: Vet the Code
       run: go vet -v ./...
@@ -50,4 +47,7 @@ jobs:
         short_tags: true
         # If this is set to true, *every* commit will be treated as a new version.
         bump_each_commit: false
+    
+    - name: Build
+      run: go build -v ./...
         
