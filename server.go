@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"path/filepath"
 	"text/template"
 	"time"
 )
@@ -20,7 +21,8 @@ func RunnerServer(w http.ResponseWriter, r *http.Request) {
 			run,
 		},
 	}
-	t, err := template.ParseFiles("html\\GetLatest.html")
+	f := filepath.Join("html", "GetLatest.html")
+	t, err := template.ParseFiles(f)
 
 	if err == nil {
 		t.Execute(w, data)
