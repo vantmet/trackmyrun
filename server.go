@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 	"text/template"
 	"time"
@@ -19,8 +20,12 @@ func RunnerServer(w http.ResponseWriter, r *http.Request) {
 			run,
 		},
 	}
-	t, _ := template.ParseFiles("html\\GetLatest.html")
+	t, err := template.ParseFiles("html\\GetLatest.html")
 
-	t.Execute(w, data)
+	if err == nil {
+		t.Execute(w, data)
+	} else {
+		fmt.Printf("Template error: %q", err)
+	}
 
 }
