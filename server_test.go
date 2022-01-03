@@ -37,20 +37,32 @@ func TestGETRuns(t *testing.T) {
 			t.Errorf("got %q, want %q", got, want)
 		}
 	})
+
+	//TODO fix issue 11.
 	t.Run("Contains run table header", func(t *testing.T) {
 		got := response.Body.String()
-		want := "<th>Date</th>\r\n                <th>Distance</th>\r\n                <th>Time</th>\r\n                <th>Pace</th>\r\n"
+		wants := [4]string{"<th>Date</th>",
+			"<th>Distance</th>",
+			"<th>Time</th>",
+			"<th>Pace</th>"}
 
-		if !strings.Contains(got, want) {
-			t.Errorf("got %q, want %q", got, want)
+		for _, want := range wants {
+			if !strings.Contains(got, want) {
+				t.Errorf("got %q, want %q", got, want)
+			}
 		}
 	})
 	t.Run("Contains a run", func(t *testing.T) {
 		got := response.Body.String()
-		want := "<td>2013-Feb-03</td>\r\n                <td>5.42km</td>\r\n                <td>0:34:52</td>\r\n                <td>6.43</td>\r\n"
+		wants := [4]string{"<td>2013-Feb-03</td>",
+			"<td>5.42km</td>",
+			"<td>0:34:52</td>",
+			"<td>6.43</td>"}
 
-		if !strings.Contains(got, want) {
-			t.Errorf("got %q, want %q", got, want)
+		for _, want := range wants {
+			if !strings.Contains(got, want) {
+				t.Errorf("got %q, want %q", got, want)
+			}
 		}
 	})
 }
