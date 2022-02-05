@@ -6,6 +6,6 @@ import (
 )
 
 func main() {
-	handler := http.HandlerFunc(RunnerServer)
+	handler := &RunnerServer{}
 	log.Fatal(http.ListenAndServe(":5000", handler))
 }
