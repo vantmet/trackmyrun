@@ -8,16 +8,14 @@ import (
 	"time"
 )
 
-func RunnerServer(w http.ResponseWriter, r *http.Request) {
-	run := GetRunnerRuns()
+func (rs *RunnerServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	runs := rs.store.GetRunnerRuns()
 	data := struct {
 		PageTitle string
 		Runs      []Run
 	}{
 		PageTitle: "My Latest Runs",
-		Runs: []Run{
-			run,
-		},
+		Runs:      runs,
 	}
 	f := filepath.Join("html", "GetLatest.html")
 	t, err := template.ParseFiles(f)
@@ -30,9 +28,23 @@ func RunnerServer(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func GetRunnerRuns() Run {
+func GetRunnerRuns() []Run {
 	const shortForm = "2006-Jan-02"
 	date, _ := time.Parse(shortForm, "2013-Feb-03")
-	run := Run{date, 5.42, RunTime{0, 34, 52}}
-	return run
+	runs := []Run{
+		{
+			Date:     date,
+			Distance: 5.42,
+			RunTime:  RunTime{0, 34, 52},
+		},
+	}
+	return runs
+}
+
+type RunnerStore interface {
+	GetRunnerRuns() []Run
+}
+
+type RunnerServer struct {
+	store RunnerStore
 }

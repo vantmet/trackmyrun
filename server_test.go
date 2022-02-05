@@ -5,13 +5,28 @@ import (
 	"net/http/httptest"
 	"strings"
 	"testing"
+	"time"
 )
 
 func TestGETRuns(t *testing.T) {
+	const shortForm = "2006-Jan-02"
+	date, _ := time.Parse(shortForm, "2013-Feb-03")
+	store := StubRunStore{
+		[]Run{
+			{
+				Date:     date,
+				Distance: 5.42,
+				RunTime:  RunTime{0, 34, 52},
+			},
+		},
+	}
+
+	server := &RunnerServer{&store}
+
 	request, _ := http.NewRequest(http.MethodGet, "/runs", nil)
 	response := httptest.NewRecorder()
 
-	RunnerServer(response, request)
+	server.ServeHTTP(response, request)
 
 	t.Run("Body Contains 'Latest Runs'", func(t *testing.T) {
 		got := response.Body.String()
@@ -64,4 +79,12 @@ func TestGETRuns(t *testing.T) {
 			}
 		}
 	})
+}
+
+type StubRunStore struct {
+	runs []Run
+}
+
+func (s *StubRunStore) GetRunnerRuns() []Run {
+	return s.runs
 }
