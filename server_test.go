@@ -24,10 +24,9 @@ func TestGETRuns(t *testing.T) {
 		nil,
 	}
 	server := &RunnerServer{&store}
-	request, _ := http.NewRequest(http.MethodGet, "/runs", nil)
 	response := httptest.NewRecorder()
 
-	server.ServeHTTP(response, request)
+	server.ServeHTTP(response, newGetRunsRequest())
 
 	t.Run("Returns 200", func(t *testing.T) {
 		assertStatus(t, response.Code, http.StatusOK)
@@ -87,16 +86,14 @@ func TestStoreRun(t *testing.T) {
 		Distance: 5.42,
 		RunTime:  RunTime{0, 34, 52},
 	}
-	jRun, _ := json.Marshal(run)
 
 	store := StubRunStore{}
 	server := &RunnerServer{&store}
 
 	t.Run("it returns accepted on POST", func(t *testing.T) {
-		request, _ := http.NewRequest(http.MethodPost, "/runs", bytes.NewBuffer(jRun))
 		response := httptest.NewRecorder()
 
-		server.ServeHTTP(response, request)
+		server.ServeHTTP(response, newPostRunRequest(run))
 		assertStatus(t, response.Code, http.StatusAccepted)
 
 		if len(store.recordRunCalls) != 1 {
@@ -133,4 +130,24 @@ func (s *StubRunStore) GetRunnerRuns() []Run {
 func (s *StubRunStore) RecordRun(r Run) {
 	s.recordRunCalls = append(s.recordRunCalls, "Added")
 	s.runs = append(s.runs, r)
+}
+
+func newPostRunRequest(run Run) *http.Request {
+	jRun, _ := json.Marshal(run)
+
+	req, _ := http.NewRequest(http.MethodPost, "/runs", bytes.NewBuffer(jRun))
+
+	return req
+}
+
+func newGetRunsRequest() *http.Request {
+	req, _ := http.NewRequest(http.MethodGet, "/runs", nil)
+	return req
+}
+
+func assertResponseBody(t testing.TB, got, want string) {
+	t.Helper()
+	if !strings.Contains(got, want) {
+		t.Errorf("response body is wrong, got %q want %q", got, want)
+	}
 }
