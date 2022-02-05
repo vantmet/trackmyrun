@@ -14,7 +14,9 @@ func (i *InMemoryRunnerStore) GetRunnerRuns() []Run {
 	return i.runs
 }
 
-func (i *InMemoryRunnerStore) RecordRun(r Run) {}
+func (i *InMemoryRunnerStore) RecordRun(r Run) {
+	i.runs = append(i.runs, r)
+}
 
 func main() {
 	logPath := "development.log"

@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"path/filepath"
 	"text/template"
-	"time"
 )
 
 func (rs *RunnerServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -26,7 +25,9 @@ func (rs *RunnerServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 func (rs *RunnerServer) processRun(w http.ResponseWriter, r *http.Request) {
 	var run Run
 	err := json.NewDecoder(r.Body).Decode(&run)
+	log.Printf("%v", run)
 	if err != nil {
+		log.Printf("%q", err.Error())
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
@@ -51,19 +52,6 @@ func (rs *RunnerServer) showRuns(w http.ResponseWriter, r *http.Request) {
 	} else {
 		fmt.Printf("Template error: %q", err)
 	}
-}
-
-func GetRunnerRuns() []Run {
-	const shortForm = "2006-Jan-02"
-	date, _ := time.Parse(shortForm, "2013-Feb-03")
-	runs := []Run{
-		{
-			Date:     date,
-			Distance: 5.42,
-			RunTime:  RunTime{0, 34, 52},
-		},
-	}
-	return runs
 }
 
 type RunnerStore interface {
