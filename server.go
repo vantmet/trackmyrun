@@ -9,9 +9,7 @@ import (
 )
 
 func RunnerServer(w http.ResponseWriter, r *http.Request) {
-	const shortForm = "2006-Jan-02"
-	date, _ := time.Parse(shortForm, "2013-Feb-03")
-	run := Run{date, 5.42, RunTime{0, 34, 52}}
+	run := GetRunnerRuns()
 	data := struct {
 		PageTitle string
 		Runs      []Run
@@ -30,4 +28,11 @@ func RunnerServer(w http.ResponseWriter, r *http.Request) {
 		fmt.Printf("Template error: %q", err)
 	}
 
+}
+
+func GetRunnerRuns() Run {
+	const shortForm = "2006-Jan-02"
+	date, _ := time.Parse(shortForm, "2013-Feb-03")
+	run := Run{date, 5.42, RunTime{0, 34, 52}}
+	return run
 }

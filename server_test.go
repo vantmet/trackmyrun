@@ -38,7 +38,6 @@ func TestGETRuns(t *testing.T) {
 		}
 	})
 
-	//TODO fix issue 11.
 	t.Run("Contains run table header", func(t *testing.T) {
 		got := response.Body.String()
 		wants := [4]string{"<th>Date</th>",
