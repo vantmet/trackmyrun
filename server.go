@@ -20,6 +20,7 @@ func (rs *RunnerServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func (rs *RunnerServer) processRun(w http.ResponseWriter) {
+	rs.store.RecordRun()
 	w.WriteHeader(http.StatusAccepted)
 }
 
@@ -57,6 +58,7 @@ func GetRunnerRuns() []Run {
 
 type RunnerStore interface {
 	GetRunnerRuns() []Run
+	RecordRun()
 }
 
 type RunnerServer struct {

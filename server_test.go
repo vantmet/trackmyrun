@@ -19,6 +19,7 @@ func TestGETRuns(t *testing.T) {
 				RunTime:  RunTime{0, 34, 52},
 			},
 		},
+		nil,
 	}
 	server := &RunnerServer{&store}
 	request, _ := http.NewRequest(http.MethodGet, "/runs", nil)
@@ -77,7 +78,8 @@ func TestGETRuns(t *testing.T) {
 }
 
 func TestStoreRun(t *testing.T) {
-
+	const shortForm = "2006-Jan-02"
+	date, _ := time.Parse(shortForm, "2013-Feb-03")
 	store := StubRunStore{}
 	server := &RunnerServer{&store}
 
@@ -87,6 +89,18 @@ func TestStoreRun(t *testing.T) {
 
 		server.ServeHTTP(response, request)
 		assertStatus(t, response.Code, http.StatusAccepted)
+
+		if len(store.recordRunCalls) != 1 {
+			t.Errorf("got %d calls to RecordRun want %d", len(store.recordRunCalls), 1)
+		}
+
+		if len(store.runs) == 0 {
+			t.Errorf("Date not stored. Runs list empty.")
+		}
+
+		if store.runs[len(store.runs)-1].Date != date {
+			t.Errorf("Got %q for run date expected %q.", store.runs[len(store.runs)-1].Date, date)
+		}
 
 	})
 }
@@ -99,9 +113,23 @@ func assertStatus(t testing.TB, got, want int) {
 }
 
 type StubRunStore struct {
-	runs []Run
+	runs           []Run
+	recordRunCalls []string
 }
 
 func (s *StubRunStore) GetRunnerRuns() []Run {
 	return s.runs
+}
+
+func (s *StubRunStore) RecordRun() {
+	const shortForm = "2006-Jan-02"
+	date, _ := time.Parse(shortForm, "2013-Feb-05")
+	run := Run{
+		Date:     date,
+		Distance: 5.42,
+		RunTime:  RunTime{0, 34, 52},
+	}
+
+	s.recordRunCalls = append(s.recordRunCalls, "Added")
+	s.runs = append(s.runs, run)
 }
