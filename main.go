@@ -6,16 +6,6 @@ import (
 	"os"
 )
 
-type InMemoryRunnerStore struct {
-	runs []Run
-}
-
-func (i *InMemoryRunnerStore) GetRunnerRuns() []Run {
-	return i.runs
-}
-
-func (i *InMemoryRunnerStore) RecordRun(r Run) {}
-
 func main() {
 	logPath := "development.log"
 
