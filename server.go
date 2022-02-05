@@ -9,6 +9,21 @@ import (
 )
 
 func (rs *RunnerServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+
+	switch r.Method {
+	case http.MethodPost:
+		rs.processRun(w)
+	case http.MethodGet:
+		rs.showRuns(w, r)
+	}
+
+}
+
+func (rs *RunnerServer) processRun(w http.ResponseWriter) {
+	w.WriteHeader(http.StatusAccepted)
+}
+
+func (rs *RunnerServer) showRuns(w http.ResponseWriter, r *http.Request) {
 	runs := rs.store.GetRunnerRuns()
 	data := struct {
 		PageTitle string
@@ -25,7 +40,6 @@ func (rs *RunnerServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	} else {
 		fmt.Printf("Template error: %q", err)
 	}
-
 }
 
 func GetRunnerRuns() []Run {
