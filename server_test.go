@@ -20,9 +20,7 @@ func TestGETRuns(t *testing.T) {
 			},
 		},
 	}
-
 	server := &RunnerServer{&store}
-
 	request, _ := http.NewRequest(http.MethodGet, "/runs", nil)
 	response := httptest.NewRecorder()
 
@@ -79,17 +77,8 @@ func TestGETRuns(t *testing.T) {
 }
 
 func TestStoreRun(t *testing.T) {
-	const shortForm = "2006-Jan-02"
-	date, _ := time.Parse(shortForm, "2013-Feb-03")
-	store := StubRunStore{
-		[]Run{
-			{
-				Date:     date,
-				Distance: 5.42,
-				RunTime:  RunTime{0, 34, 52},
-			},
-		},
-	}
+
+	store := StubRunStore{}
 	server := &RunnerServer{&store}
 
 	t.Run("it returns accepted on POST", func(t *testing.T) {
