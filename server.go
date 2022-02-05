@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"path/filepath"
 	"text/template"
@@ -10,6 +11,8 @@ import (
 )
 
 func (rs *RunnerServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+
+	log.Printf("%s %s %s %s\n", r.RemoteAddr, r.Method, r.URL, r.Body)
 
 	switch r.Method {
 	case http.MethodPost:
