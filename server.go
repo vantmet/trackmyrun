@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"path/filepath"
@@ -12,15 +13,21 @@ func (rs *RunnerServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	switch r.Method {
 	case http.MethodPost:
-		rs.processRun(w)
+		rs.processRun(w, r)
 	case http.MethodGet:
 		rs.showRuns(w, r)
 	}
 
 }
 
-func (rs *RunnerServer) processRun(w http.ResponseWriter) {
-	rs.store.RecordRun()
+func (rs *RunnerServer) processRun(w http.ResponseWriter, r *http.Request) {
+	var run Run
+	err := json.NewDecoder(r.Body).Decode(&run)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	rs.store.RecordRun(run)
 	w.WriteHeader(http.StatusAccepted)
 }
 
@@ -58,7 +65,7 @@ func GetRunnerRuns() []Run {
 
 type RunnerStore interface {
 	GetRunnerRuns() []Run
-	RecordRun()
+	RecordRun(r Run)
 }
 
 type RunnerServer struct {

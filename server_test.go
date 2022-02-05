@@ -1,6 +1,8 @@
 package main
 
 import (
+	"bytes"
+	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -80,11 +82,18 @@ func TestGETRuns(t *testing.T) {
 func TestStoreRun(t *testing.T) {
 	const shortForm = "2006-Jan-02"
 	date, _ := time.Parse(shortForm, "2013-Feb-03")
+	run := Run{
+		Date:     date,
+		Distance: 5.42,
+		RunTime:  RunTime{0, 34, 52},
+	}
+	jRun, _ := json.Marshal(run)
+
 	store := StubRunStore{}
 	server := &RunnerServer{&store}
 
 	t.Run("it returns accepted on POST", func(t *testing.T) {
-		request, _ := http.NewRequest(http.MethodPost, "/runs", nil)
+		request, _ := http.NewRequest(http.MethodPost, "/runs", bytes.NewBuffer(jRun))
 		response := httptest.NewRecorder()
 
 		server.ServeHTTP(response, request)
@@ -121,15 +130,7 @@ func (s *StubRunStore) GetRunnerRuns() []Run {
 	return s.runs
 }
 
-func (s *StubRunStore) RecordRun() {
-	const shortForm = "2006-Jan-02"
-	date, _ := time.Parse(shortForm, "2013-Feb-05")
-	run := Run{
-		Date:     date,
-		Distance: 5.42,
-		RunTime:  RunTime{0, 34, 52},
-	}
-
+func (s *StubRunStore) RecordRun(r Run) {
 	s.recordRunCalls = append(s.recordRunCalls, "Added")
-	s.runs = append(s.runs, run)
+	s.runs = append(s.runs, r)
 }

@@ -13,7 +13,7 @@ func (i *InMemoryRunnerStore) GetRunnerRuns() []Run {
 	return i.runs
 }
 
-func (i *InMemoryRunnerStore) RecordRun() {}
+func (i *InMemoryRunnerStore) RecordRun(r Run) {}
 
 func main() {
 	handler := &RunnerServer{&InMemoryRunnerStore{}}
