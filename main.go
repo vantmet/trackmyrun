@@ -13,8 +13,11 @@ func main() {
 
 	log.SetFlags(log.Ldate | log.Ltime | log.Lshortfile)
 
-	handler := &RunnerServer{&InMemoryRunnerStore{}}
-	log.Fatal(http.ListenAndServe(":5000", handler))
+	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("html"))))
+
+	http.Handle("/runs", &RunnerServer{&InMemoryRunnerStore{}})
+	log.Fatal(http.ListenAndServe(":5000", nil))
+
 }
 
 func openLogFile(logfile string) {
