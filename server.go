@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"path/filepath"
+	"strconv"
 	"text/template"
 )
 
@@ -31,6 +32,16 @@ func (rs *RunnerServer) processRun(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
+	}
+
+	if r.Header["Content-Type"][0] == "application/x-www-form-urlencoded" {
+		fDateString := r.FormValue("date")
+		fDistString := r.FormValue("distance")
+
+		fDist, _ := strconv.ParseFloat(r.FormValue("distance"), 32)
+		run.Distance = float32(fDist)
+
+		log.Printf("Date: %q, Distance: %q", fDateString, fDistString)
 	}
 	rs.store.RecordRun(run)
 	w.WriteHeader(http.StatusAccepted)
