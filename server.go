@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"strconv"
 	"text/template"
+	"time"
 )
 
 func (rs *RunnerServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -35,13 +36,21 @@ func (rs *RunnerServer) processRun(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if r.Header["Content-Type"][0] == "application/x-www-form-urlencoded" {
+		//Form data is a bunch of strings. Convert them to the right thing.
 		fDateString := r.FormValue("date")
 		fDistString := r.FormValue("distance")
+		log.Printf("Date: %q, Distance: %q", fDateString, fDistString)
 
-		fDist, _ := strconv.ParseFloat(r.FormValue("distance"), 32)
+		//parse Date
+		const shortForm = "2006-01-02T15:04"
+		fDate, _ := time.Parse(shortForm, fDateString)
+		//Pase Distance.
+		fDist, _ := strconv.ParseFloat(fDistString, 32)
+
+		//Populate the run
+		run.Date = fDate
 		run.Distance = float32(fDist)
 
-		log.Printf("Date: %q, Distance: %q", fDateString, fDistString)
 	}
 	rs.store.RecordRun(run)
 	w.WriteHeader(http.StatusAccepted)
