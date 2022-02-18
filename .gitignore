@@ -16,3 +16,7 @@
 
 # Logs
 development.log
+
+#A place to store local stuff I don't want to version control
+
+archive/
