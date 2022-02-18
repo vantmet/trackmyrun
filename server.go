@@ -23,12 +23,14 @@ func (rs *RunnerServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 func (rs *RunnerServer) processRun(w http.ResponseWriter, r *http.Request) {
 	var run Run
-	err := json.NewDecoder(r.Body).Decode(&run)
-	log.Printf("%v", run)
-	if err != nil {
-		log.Printf("%q", err.Error())
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
+	if r.Header["Content-Type"][0] == "application/json" {
+		err := json.NewDecoder(r.Body).Decode(&run)
+		log.Printf("%v", run)
+		if err != nil {
+			log.Printf("%q", err.Error())
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
 	}
 	rs.store.RecordRun(run)
 	w.WriteHeader(http.StatusAccepted)
