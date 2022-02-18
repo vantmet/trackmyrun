@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"path/filepath"
@@ -54,7 +53,7 @@ func (rs *RunnerServer) showRuns(w http.ResponseWriter, r *http.Request) {
 	if err == nil {
 		t.Execute(w, data)
 	} else {
-		fmt.Printf("Template error: %q", err)
+		log.Printf("Template error: %q", err)
 	}
 }
 
