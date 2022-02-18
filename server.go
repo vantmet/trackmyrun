@@ -33,16 +33,20 @@ func (rs *RunnerServer) processRun(w http.ResponseWriter, r *http.Request) {
 	}
 	rs.store.RecordRun(run)
 	w.WriteHeader(http.StatusAccepted)
+	rs.showRuns(w, r)
 }
 
 func (rs *RunnerServer) showRuns(w http.ResponseWriter, r *http.Request) {
+	success := false
 	runs := rs.store.GetRunnerRuns()
 	data := struct {
 		PageTitle string
 		Runs      []Run
+		Status    bool
 	}{
 		PageTitle: "My Latest Runs",
 		Runs:      runs,
+		Status:    success,
 	}
 	f := filepath.Join("html", "GetLatest.html")
 	t, err := template.ParseFiles(f)
