@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"path/filepath"
 	"strconv"
+	"strings"
 	"text/template"
 	"time"
 )
@@ -39,17 +40,26 @@ func (rs *RunnerServer) processRun(w http.ResponseWriter, r *http.Request) {
 		//Form data is a bunch of strings. Convert them to the right thing.
 		fDateString := r.FormValue("date")
 		fDistString := r.FormValue("distance")
-		log.Printf("Date: %q, Distance: %q", fDateString, fDistString)
+		fRunTimeString := r.FormValue("runtime")
+		log.Printf("Date: %q, Distance: %q, RunTime: %q", fDateString, fDistString, fRunTimeString)
 
 		//parse Date
 		const shortForm = "2006-01-02T15:04"
 		fDate, _ := time.Parse(shortForm, fDateString)
 		//Pase Distance.
 		fDist, _ := strconv.ParseFloat(fDistString, 32)
+		//Parse runtime
+		chunks := strings.Split(fRunTimeString, ":")
+		fHours, _ := strconv.ParseInt(chunks[0], 10, 32)
+		fMins, _ := strconv.ParseInt(chunks[1], 10, 32)
+		fSecs, _ := strconv.ParseFloat(chunks[2], 32)
 
 		//Populate the run
 		run.Date = fDate
 		run.Distance = float32(fDist)
+		run.RunTime.Hours = int(fHours)
+		run.RunTime.Minutes = int(fMins)
+		run.RunTime.Seconds = float32(fSecs)
 
 	}
 	rs.store.RecordRun(run)
