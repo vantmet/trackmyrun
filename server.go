@@ -16,7 +16,7 @@ func (rs *RunnerServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	case http.MethodPost:
 		rs.processRun(w, r)
 	case http.MethodGet:
-		rs.showRuns(w, r)
+		rs.showRuns(w, r, false)
 	}
 
 }
@@ -32,12 +32,12 @@ func (rs *RunnerServer) processRun(w http.ResponseWriter, r *http.Request) {
 	}
 	rs.store.RecordRun(run)
 	w.WriteHeader(http.StatusAccepted)
-	rs.showRuns(w, r)
+	rs.showRuns(w, r, true)
 }
 
-func (rs *RunnerServer) showRuns(w http.ResponseWriter, r *http.Request) {
-	success := false
+func (rs *RunnerServer) showRuns(w http.ResponseWriter, r *http.Request, success bool) {
 	runs := rs.store.GetRunnerRuns()
+
 	data := struct {
 		PageTitle string
 		Runs      []Run
