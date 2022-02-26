@@ -120,6 +120,7 @@ func newPostRunRequest(run Run) *http.Request {
 	jRun, _ := json.Marshal(run)
 
 	req, _ := http.NewRequest(http.MethodPost, "/runs", bytes.NewBuffer(jRun))
+	req.Header.Set("Content-Type", "application/json")
 
 	return req
 }
