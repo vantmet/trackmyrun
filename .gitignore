@@ -20,3 +20,7 @@ development.log
 #A place to store local stuff I don't want to version control
 
 archive/
+
+# Don't include the exe for the docker image
+
+docker/app/tmr
