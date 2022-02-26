@@ -28,11 +28,11 @@
         <h1>Submit Run</h1>
             <form id="newRun" action="/runs" method="post" name="runData">
             <label for="Date">Run Date</label>
-            <input type="datetime-local" id="date" name="date"/>
+            <input type="datetime-local" id="date" name="date" required/>
             <label for="Distance">Run Distance</label>
-            <input type="number" id="distance" name="distance" />
+            <input type="text" id="distance" name="distance" required/>
             <label for="runtime"></label>
-            <input type="text" id="runtime" name="runtime" />
+            <input type="text" id="runtime" name="runtime" placeholder="0:34:56.34" required/>
 
             <input value="submit" type="submit">
         </form>

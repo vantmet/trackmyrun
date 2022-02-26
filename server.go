@@ -38,6 +38,7 @@ func (rs *RunnerServer) processRun(w http.ResponseWriter, r *http.Request) {
 
 	if r.Header["Content-Type"][0] == "application/x-www-form-urlencoded" {
 		//Form data is a bunch of strings. Convert them to the right thing.
+		//Validation is done in the Javascript for the form. TODO
 		fDateString := r.FormValue("date")
 		fDistString := r.FormValue("distance")
 		fRunTimeString := r.FormValue("runtime")
