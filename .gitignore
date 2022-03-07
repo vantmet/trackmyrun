@@ -24,3 +24,4 @@ archive/
 # Don't include the exe for the docker image
 
 docker/app/tmr
+cdk.context.json
