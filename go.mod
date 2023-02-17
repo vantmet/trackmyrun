@@ -1,13 +1,16 @@
 module github.com/vantmet/trackmyrun
 
-go 1.17
+go 1.20
 
 require (
-	github.com/aws/aws-cdk-go/awscdk/v2 v2.14.0
-	github.com/aws/constructs-go/constructs/v10 v10.0.9
-	github.com/aws/jsii-runtime-go v1.54.0
+	github.com/aws/aws-cdk-go/awscdk/v2 v2.65.0
+	github.com/aws/constructs-go/constructs/v10 v10.1.249
+	github.com/aws/jsii-runtime-go v1.74.0
 )
 
 require (
-	github.com/Masterminds/semver/v3 v3.1.1 // indirect
+	github.com/Masterminds/semver/v3 v3.2.0 // indirect
+	github.com/cdklabs/awscdk-asset-awscli-go/awscliv1/v2 v2.2.66 // indirect
+	github.com/cdklabs/awscdk-asset-kubectl-go/kubectlv20/v2 v2.1.1 // indirect
+	github.com/cdklabs/awscdk-asset-node-proxy-agent-go/nodeproxyagentv5/v2 v2.0.55 // indirect
 )
