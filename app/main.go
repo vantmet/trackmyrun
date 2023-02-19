@@ -1,33 +1,25 @@
 package main
 
 import (
-	"log"
 	"net/http"
-	"os"
+
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 )
 
 func main() {
-	logPath := "development.log"
 
-	openLogFile(logPath)
+	store := InMemoryRunnerStore{}
+	server := RunnerServer{&store}
 
-	log.SetFlags(log.Ldate | log.Ltime | log.Lshortfile)
+	r := chi.NewRouter()
+	r.Use(middleware.Logger)
+	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("welcome"))
+	})
 
-	http.Handle("/", http.FileServer(http.Dir("html")))
+	r.Get("/runs", server.ServeHTTP)
+	r.Post("/runs", server.ServeHTTP)
+	http.ListenAndServe(":5000", r)
 
-	http.Handle("/runs", &RunnerServer{&InMemoryRunnerStore{}})
-	log.Fatal(http.ListenAndServe(":5000", nil))
-
-}
-
-func openLogFile(logfile string) {
-	if logfile != "" {
-		lf, err := os.OpenFile(logfile, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0640)
-
-		if err != nil {
-			log.Fatal("OpenLogfile: os.OpenFile:", err)
-		}
-
-		log.SetOutput(lf)
-	}
 }
