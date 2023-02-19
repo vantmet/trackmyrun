@@ -5,6 +5,8 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	chiprometheus "github.com/jamscloud/chi-prometheus"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 func main() {
@@ -14,6 +16,11 @@ func main() {
 
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
+	m := chiprometheus.NewMiddleware("serviceName")
+
+	r.Use(m)
+
+	r.Handle("/metrics", promhttp.Handler())
 	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("welcome"))
 	})
