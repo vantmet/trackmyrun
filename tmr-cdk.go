@@ -80,6 +80,9 @@ func NewTmrCdkStack(scope constructs.Construct, id string, props *TmrCdkStackPro
 		Vpc:        vpc,
 		Protocol:   awselasticloadbalancingv2.ApplicationProtocol_HTTP,
 		TargetType: awselasticloadbalancingv2.TargetType_IP,
+		HealthCheck: &awselasticloadbalancingv2.HealthCheck{
+			Path: jsii.String("/ping"),
+		},
 	})
 	lb := awselasticloadbalancingv2.NewApplicationLoadBalancer(stack, jsii.String("TMRLB"), &awselasticloadbalancingv2.ApplicationLoadBalancerProps{
 		Vpc:            vpc,
