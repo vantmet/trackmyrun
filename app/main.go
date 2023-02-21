@@ -15,10 +15,13 @@ func main() {
 	server := RunnerServer{&store}
 
 	r := chi.NewRouter()
+	r.Use(middleware.RequestID)
+	r.Use(middleware.RealIP)
 	r.Use(middleware.Logger)
+	r.Use(middleware.Heartbeat("/ping"))
 	m := chiprometheus.NewMiddleware("serviceName")
-
 	r.Use(m)
+	r.Use(middleware.Recoverer)
 
 	r.Handle("/metrics", promhttp.Handler())
 	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
