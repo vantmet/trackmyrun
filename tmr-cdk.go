@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/aws/aws-cdk-go/awscdk/v2"
+	"github.com/aws/aws-cdk-go/awscdk/v2/awscognito"
 	"github.com/aws/aws-cdk-go/awscdk/v2/awsec2"
 	"github.com/aws/aws-cdk-go/awscdk/v2/awsecrassets"
 	"github.com/aws/aws-cdk-go/awscdk/v2/awsecs"
@@ -79,6 +80,9 @@ func NewTmrCdkStack(scope constructs.Construct, id string, props *TmrCdkStackPro
 		Vpc:        vpc,
 		Protocol:   awselasticloadbalancingv2.ApplicationProtocol_HTTP,
 		TargetType: awselasticloadbalancingv2.TargetType_IP,
+		HealthCheck: &awselasticloadbalancingv2.HealthCheck{
+			Path: jsii.String("/ping"),
+		},
 	})
 	lb := awselasticloadbalancingv2.NewApplicationLoadBalancer(stack, jsii.String("TMRLB"), &awselasticloadbalancingv2.ApplicationLoadBalancerProps{
 		Vpc:            vpc,
@@ -98,6 +102,10 @@ func NewTmrCdkStack(scope constructs.Construct, id string, props *TmrCdkStackPro
 		Value:       lb.LoadBalancerDnsName(),
 		Description: jsii.String("The URL of the load balancer for testing."),
 		ExportName:  jsii.String("TMRURL"),
+	})
+
+	awscognito.NewUserPool(stack, jsii.String("tmruserpool"), &awscognito.UserPoolProps{
+		UserPoolName: jsii.String("Track My Run - userpool"),
 	})
 
 	return stack
