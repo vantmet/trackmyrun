@@ -64,7 +64,7 @@ jobs:
     - name: Publish to Registry
       uses: elgohr/Publish-Docker-Github-Action@v5
       with:
-        name: vantmet/tmr
+        name: cdk-hnb659fds-container-assets-606662134411-eu-west-2
         username: ${{ steps.ecr.outputs.username }}
         password: ${{ steps.ecr.outputs.password }}
         registry: ${{ steps.ecr.outputs.registry }}
