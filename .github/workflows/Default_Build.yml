@@ -62,7 +62,7 @@ jobs:
     - name: Publish to Registry
       uses: elgohr/Publish-Docker-Github-Action@v5
       with:
-        name: vantmet/tmr:${{ steps.gsm.version_tag }}
+        name: vantmet/tmr:${{ steps.gsv.version_tag }}
         username: ${{ steps.ecr.outputs.username }}
         password: ${{ steps.ecr.outputs.password }}
         registry: ${{ steps.ecr.outputs.registry }}
