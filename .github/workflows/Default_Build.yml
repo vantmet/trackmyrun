@@ -49,5 +49,5 @@ jobs:
         bump_each_commit: false
     
     - name: Build
-      run: go build -v ./...
+      run: make build-linux
         

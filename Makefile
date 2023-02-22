@@ -1,3 +1,3 @@
 build-linux:
-	cd app; $ENV:GOOS="linux";$ENV:GOARCH="amd64"; go build -o ../docker-images/app
-	docker build -t vantmet/tmr .
+	GOOS="linux" GOARCH="amd64" go build -o tmr -C app .
+	docker build -t vantmet/tmr app/Dockerfile
