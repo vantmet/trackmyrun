@@ -9,7 +9,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         fetch-depth: 0
 
@@ -25,6 +25,7 @@ jobs:
       run: go test -v ./...
 
     - name: Git Semantic Version
+      id: gsv
       uses: PaulHatch/semantic-version@v4.0.2
 
       with:
@@ -50,4 +51,18 @@ jobs:
     
     - name: Build
       run: make build-linux
-        
+
+    - name: Login to ECR
+      id: ecr
+      uses: elgohr/ecr-login-action@v3
+      with:
+        access_key: ${{ secrets.AWS_ACCESS_KEY }}
+        secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        region: ${{ secrets.AWS_REGION }}
+    - name: Publish to Registry
+      uses: elgohr/Publish-Docker-Github-Action@v5
+      with:
+        name: vantmet/tmr:${{ steps.gsm.version_tag }}
+        username: ${{ steps.ecr.outputs.username }}
+        password: ${{ steps.ecr.outputs.password }}
+        registry: ${{ steps.ecr.outputs.registry }}
