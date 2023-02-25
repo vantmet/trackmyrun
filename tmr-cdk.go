@@ -4,7 +4,6 @@ import (
 	"github.com/aws/aws-cdk-go/awscdk/v2"
 	"github.com/aws/aws-cdk-go/awscdk/v2/awscognito"
 	"github.com/aws/aws-cdk-go/awscdk/v2/awsec2"
-	"github.com/aws/aws-cdk-go/awscdk/v2/awsecrassets"
 	"github.com/aws/aws-cdk-go/awscdk/v2/awsecs"
 	"github.com/aws/aws-cdk-go/awscdk/v2/awselasticloadbalancingv2"
 	"github.com/aws/aws-cdk-go/awscdk/v2/awsiam"
@@ -29,10 +28,15 @@ func NewTmrCdkStack(scope constructs.Construct, id string, props *TmrCdkStackPro
 		Vpc: vpc,
 	})
 
-	// Create the Docker image.
-	image := awsecrassets.NewDockerImageAsset(stack, jsii.String("ApplicationImage"), &awsecrassets.DockerImageAssetProps{
-		Directory: jsii.String("./app"),
-	})
+	// To create the Docker image.
+	/*
+		appImage := awsecrassets.NewDockerImageAsset(stack, jsii.String("ApplicationImage"), &awsecrassets.DockerImageAssetProps{
+			Directory: jsii.String("./app"),
+		})
+		imageName := jsii.String(*appImage.ImageUri()) */
+
+	//To Use an existing image.
+	imageName := jsii.String("606662134411.dkr.ecr.eu-west-2.amazonaws.com/trackmyrun:latest")
 
 	//Create Fargate Service
 	//Task Execution Role
@@ -59,7 +63,7 @@ func NewTmrCdkStack(scope constructs.Construct, id string, props *TmrCdkStackPro
 	})
 
 	container := td.AddContainer(jsii.String("taskContainer"), &awsecs.ContainerDefinitionOptions{
-		Image: awsecs.ContainerImage_FromDockerImageAsset(image),
+		Image: awsecs.ContainerImage_FromRegistry(imageName, &awsecs.RepositoryImageProps{}),
 		Logging: awsecs.LogDriver_AwsLogs(&awsecs.AwsLogDriverProps{
 			StreamPrefix: jsii.String("task"),
 		}),
