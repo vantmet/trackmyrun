@@ -59,3 +59,13 @@ jobs:
         registry: ${{ steps.ecr.outputs.registry }}
         dockerfile: build/Dockerfile-tmr
         tags: "latest,${{ steps.gsv.outputs.version }}"
+        
+    - name: Publish Main App to Registry
+      uses: elgohr/Publish-Docker-Github-Action@v5
+      with:
+        name: trackmyrun-auth
+        username: ${{ steps.ecr.outputs.username }}
+        password: ${{ steps.ecr.outputs.password }}
+        registry: ${{ steps.ecr.outputs.registry }}
+        dockerfile: build/Dockerfile-tmr-auth
+        tags: "latest,${{ steps.gsv.outputs.version }}"
