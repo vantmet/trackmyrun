@@ -37,7 +37,7 @@ jobs:
         bump_each_commit: false
     
     - name: Build
-      run: make build-linux
+      run: make -f build/Makefile build-linux
 
     - name: Login to ECR
       id: ecr
