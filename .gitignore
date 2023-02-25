@@ -26,3 +26,4 @@ archive/
 docker/app/tmr
 cdk.context.json
 app/tmr/tmr
+app/tmr-auth/tmr-auth
