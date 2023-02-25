@@ -25,7 +25,7 @@ func NewTmrCdkStack(scope constructs.Construct, id string, props *TmrCdkStackPro
 	userPool := awscognito.NewUserPool(stack, jsii.String("tmruserpool"), &awscognito.UserPoolProps{
 		UserPoolName: jsii.String("Track My Run - userpool"),
 	})
-	userPool.ApplyRemovalPolicy(`RemovalPolicy.DESTROY`)
+	userPool.ApplyRemovalPolicy(awscdk.RemovalPolicy_DESTROY)
 	userPool.AddClient(jsii.String("TMR Users"), &awscognito.UserPoolClientOptions{})
 	//clientID := userPoolClient.UserPoolClientId()
 
