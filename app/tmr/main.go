@@ -2,6 +2,7 @@ package main
 
 import (
 	"net/http"
+	"path/filepath"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -12,7 +13,7 @@ import (
 func main() {
 
 	store := InMemoryRunnerStore{}
-	server := RunnerServer{&store, "/opt/tmr/html"}
+	server := RunnerServer{&store, filepath.FromSlash("../../web/html")}
 
 	r := chi.NewRouter()
 	r.Use(middleware.RequestID)
