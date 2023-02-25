@@ -3,13 +3,14 @@ package main
 import (
 	"net/http"
 	"net/http/httptest"
+	"path/filepath"
 	"testing"
 	"time"
 )
 
 func TestRecordingAndRetrievingRuns(t *testing.T) {
 	store := InMemoryRunnerStore{}
-	server := RunnerServer{&store, "..\\..\\web\\html"}
+	server := RunnerServer{&store, filepath.FromSlash("../../web/html")}
 
 	const shortForm = "2006-Jan-02"
 	date1, _ := time.Parse(shortForm, "2013-Feb-03")

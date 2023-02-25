@@ -3,10 +3,8 @@ package main
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"net/http/httptest"
-	"os"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -76,8 +74,6 @@ func TestStoreRun(t *testing.T) {
 
 	store := StubRunStore{}
 	server := &RunnerServer{&store, filepath.FromSlash("../../web/html")}
-	here, _ := os.Getwd()
-	fmt.Printf("Current dir: %s", here)
 
 	t.Run("it returns accepted on POST", func(t *testing.T) {
 		response := httptest.NewRecorder()
