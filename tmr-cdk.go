@@ -22,6 +22,13 @@ func NewTmrCdkStack(scope constructs.Construct, id string, props *TmrCdkStackPro
 	}
 	stack := awscdk.NewStack(scope, &id, &sprops)
 
+	userPool := awscognito.NewUserPool(stack, jsii.String("tmruserpool"), &awscognito.UserPoolProps{
+		UserPoolName: jsii.String("Track My Run - userpool"),
+	})
+	userPool.ApplyRemovalPolicy(awscdk.RemovalPolicy_DESTROY)
+	userPool.AddClient(jsii.String("TMR Users"), &awscognito.UserPoolClientOptions{})
+	//clientID := userPoolClient.UserPoolClientId()
+
 	//Create a VPC + Cluster to live in
 	vpc := awsec2.NewVpc(stack, jsii.String("TMRVPC"), &awsec2.VpcProps{})
 	cluster := awsecs.NewCluster(stack, jsii.String("TMRCluster"), &awsecs.ClusterProps{
@@ -36,34 +43,35 @@ func NewTmrCdkStack(scope constructs.Construct, id string, props *TmrCdkStackPro
 		imageName := jsii.String(*appImage.ImageUri()) */
 
 	//To Use an existing image.
-	imageName := jsii.String("606662134411.dkr.ecr.eu-west-2.amazonaws.com/trackmyrun:latest")
+	appImageName := jsii.String("606662134411.dkr.ecr.eu-west-2.amazonaws.com/trackmyrun:latest")
+	//authImageName := jsii.String("606662134411.dkr.ecr.eu-west-2.amazonaws.com/trackmyrun-auth:latest")
 
 	//Create Fargate Service
 	//Task Execution Role
-	ter := awsiam.NewRole(stack, jsii.String("taskExecutionRole"), &awsiam.RoleProps{
+	taskExecutionRole := awsiam.NewRole(stack, jsii.String("taskExecutionRole"), &awsiam.RoleProps{
 		AssumedBy: awsiam.NewServicePrincipal(jsii.String("ecs-tasks.amazonaws.com"), &awsiam.ServicePrincipalOpts{}),
 	})
-	ter.AddToPolicy(awsiam.NewPolicyStatement(&awsiam.PolicyStatementProps{
+	taskExecutionRole.AddToPolicy(awsiam.NewPolicyStatement(&awsiam.PolicyStatementProps{
 		Actions:   jsii.Strings("ecr:BatchCheckLayerAvailability", "ecr:GetDownloadUrlForLayer", "ecr:BatchGetImage", "logs:CreateLogStream", "logs:PutLogEvents", "ecr:GetAuthorizationToken"),
 		Resources: jsii.Strings("*"),
 	}))
 	//Task Role
-	tr := awsiam.NewRole(stack, jsii.String("taskRole"), &awsiam.RoleProps{
+	taskRole := awsiam.NewRole(stack, jsii.String("taskRole"), &awsiam.RoleProps{
 		AssumedBy: awsiam.NewServicePrincipal(jsii.String("ecs-tasks.amazonaws.com"), &awsiam.ServicePrincipalOpts{}),
 	})
-	tr.AddToPolicy(awsiam.NewPolicyStatement(&awsiam.PolicyStatementProps{
+	taskRole.AddToPolicy(awsiam.NewPolicyStatement(&awsiam.PolicyStatementProps{
 		Actions:   jsii.Strings("logs:CreateLogGroup", "logs:CreateLogStream", "logs:PutLogEvents"),
 		Resources: jsii.Strings("*"),
 	}))
-	td := awsecs.NewFargateTaskDefinition(stack, jsii.String("taskDefinition"), &awsecs.FargateTaskDefinitionProps{
+	appTaskDefinition := awsecs.NewFargateTaskDefinition(stack, jsii.String("taskDefinition"), &awsecs.FargateTaskDefinitionProps{
 		MemoryLimitMiB: jsii.Number(512),
 		Cpu:            jsii.Number(256),
-		ExecutionRole:  ter,
-		TaskRole:       tr,
+		ExecutionRole:  taskExecutionRole,
+		TaskRole:       taskRole,
 	})
 
-	container := td.AddContainer(jsii.String("taskContainer"), &awsecs.ContainerDefinitionOptions{
-		Image: awsecs.ContainerImage_FromRegistry(imageName, &awsecs.RepositoryImageProps{}),
+	container := appTaskDefinition.AddContainer(jsii.String("taskContainer"), &awsecs.ContainerDefinitionOptions{
+		Image: awsecs.ContainerImage_FromRegistry(appImageName, &awsecs.RepositoryImageProps{}),
 		Logging: awsecs.LogDriver_AwsLogs(&awsecs.AwsLogDriverProps{
 			StreamPrefix: jsii.String("task"),
 		}),
@@ -73,7 +81,7 @@ func NewTmrCdkStack(scope constructs.Construct, id string, props *TmrCdkStackPro
 
 	service := awsecs.NewFargateService(stack, jsii.String("TMRFGService"), &awsecs.FargateServiceProps{
 		Cluster:        cluster,
-		TaskDefinition: td,
+		TaskDefinition: appTaskDefinition,
 		DesiredCount:   jsii.Number(1),
 		AssignPublicIp: jsii.Bool(true),
 	})
@@ -106,10 +114,6 @@ func NewTmrCdkStack(scope constructs.Construct, id string, props *TmrCdkStackPro
 		Value:       lb.LoadBalancerDnsName(),
 		Description: jsii.String("The URL of the load balancer for testing."),
 		ExportName:  jsii.String("TMRURL"),
-	})
-
-	awscognito.NewUserPool(stack, jsii.String("tmruserpool"), &awscognito.UserPoolProps{
-		UserPoolName: jsii.String("Track My Run - userpool"),
 	})
 
 	return stack

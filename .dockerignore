@@ -1,3 +1,4 @@
 *
 !app/tmr
+!app/tmr-auth
 !web/*
