@@ -54,5 +54,5 @@ jobs:
         username: ${{ steps.ecr.outputs.username }}
         password: ${{ steps.ecr.outputs.password }}
         registry: ${{ steps.ecr.outputs.registry }}
-        workdir: app
+        dockerfile: build/Dockerfile-tmr
         tags: "latest,${{ steps.gsv.outputs.version }}"
