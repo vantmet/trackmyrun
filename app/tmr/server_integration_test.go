@@ -9,7 +9,7 @@ import (
 
 func TestRecordingAndRetrievingRuns(t *testing.T) {
 	store := InMemoryRunnerStore{}
-	server := RunnerServer{&store}
+	server := RunnerServer{&store, "..\\..\\web\\html"}
 
 	const shortForm = "2006-Jan-02"
 	date1, _ := time.Parse(shortForm, "2013-Feb-03")

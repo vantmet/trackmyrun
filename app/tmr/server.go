@@ -11,6 +11,16 @@ import (
 	"time"
 )
 
+type RunnerStore interface {
+	GetRunnerRuns() []Run
+	RecordRun(r Run)
+}
+
+type RunnerServer struct {
+	store    RunnerStore
+	htmlRoot string
+}
+
 func (rs *RunnerServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	log.Printf("%s %s %s %s\n", r.RemoteAddr, r.Method, r.URL, r.Body)
@@ -80,7 +90,7 @@ func (rs *RunnerServer) showRuns(w http.ResponseWriter, r *http.Request, success
 		Runs:      runs,
 		Status:    success,
 	}
-	f := filepath.Join("html", "GetLatest.html")
+	f := filepath.Join(rs.htmlRoot, "GetLatest.html")
 	t, err := template.ParseFiles(f)
 
 	if err == nil {
@@ -88,13 +98,4 @@ func (rs *RunnerServer) showRuns(w http.ResponseWriter, r *http.Request, success
 	} else {
 		log.Printf("Template error: %q", err)
 	}
-}
-
-type RunnerStore interface {
-	GetRunnerRuns() []Run
-	RecordRun(r Run)
-}
-
-type RunnerServer struct {
-	store RunnerStore
 }

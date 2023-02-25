@@ -23,7 +23,7 @@ func TestGETRuns(t *testing.T) {
 		},
 		nil,
 	}
-	server := &RunnerServer{&store}
+	server := &RunnerServer{&store, "..\\..\\web\\html"}
 	response := httptest.NewRecorder()
 
 	server.ServeHTTP(response, newGetRunsRequest())
@@ -72,7 +72,7 @@ func TestStoreRun(t *testing.T) {
 	}
 
 	store := StubRunStore{}
-	server := &RunnerServer{&store}
+	server := &RunnerServer{&store, "..\\..\\web\\html"}
 
 	t.Run("it returns accepted on POST", func(t *testing.T) {
 		response := httptest.NewRecorder()
