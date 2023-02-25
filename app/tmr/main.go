@@ -12,7 +12,7 @@ import (
 func main() {
 
 	store := InMemoryRunnerStore{}
-	server := RunnerServer{&store}
+	server := RunnerServer{&store, "/opt/tmr/html"}
 
 	r := chi.NewRouter()
 	r.Use(middleware.RequestID)
