@@ -22,6 +22,13 @@ func NewTmrCdkStack(scope constructs.Construct, id string, props *TmrCdkStackPro
 	}
 	stack := awscdk.NewStack(scope, &id, &sprops)
 
+	userPool := awscognito.NewUserPool(stack, jsii.String("tmruserpool"), &awscognito.UserPoolProps{
+		UserPoolName: jsii.String("Track My Run - userpool"),
+	})
+	userPool.ApplyRemovalPolicy(`RemovalPolicy.DESTROY`)
+	userPoolClient := userPool.AddClient(jsii.String("TMR Users"), &awscognito.UserPoolClientOptions{})
+	//clientID := userPoolClient.UserPoolClientId()
+
 	//Create a VPC + Cluster to live in
 	vpc := awsec2.NewVpc(stack, jsii.String("TMRVPC"), &awsec2.VpcProps{})
 	cluster := awsecs.NewCluster(stack, jsii.String("TMRCluster"), &awsecs.ClusterProps{
@@ -36,7 +43,7 @@ func NewTmrCdkStack(scope constructs.Construct, id string, props *TmrCdkStackPro
 		imageName := jsii.String(*appImage.ImageUri()) */
 
 	//To Use an existing image.
-	imageName := jsii.String("606662134411.dkr.ecr.eu-west-2.amazonaws.com/trackmyrun:latest")
+	appImageName := jsii.String("606662134411.dkr.ecr.eu-west-2.amazonaws.com/trackmyrun:latest")
 
 	//Create Fargate Service
 	//Task Execution Role
@@ -63,7 +70,7 @@ func NewTmrCdkStack(scope constructs.Construct, id string, props *TmrCdkStackPro
 	})
 
 	container := td.AddContainer(jsii.String("taskContainer"), &awsecs.ContainerDefinitionOptions{
-		Image: awsecs.ContainerImage_FromRegistry(imageName, &awsecs.RepositoryImageProps{}),
+		Image: awsecs.ContainerImage_FromRegistry(appImageName, &awsecs.RepositoryImageProps{}),
 		Logging: awsecs.LogDriver_AwsLogs(&awsecs.AwsLogDriverProps{
 			StreamPrefix: jsii.String("task"),
 		}),
@@ -106,10 +113,6 @@ func NewTmrCdkStack(scope constructs.Construct, id string, props *TmrCdkStackPro
 		Value:       lb.LoadBalancerDnsName(),
 		Description: jsii.String("The URL of the load balancer for testing."),
 		ExportName:  jsii.String("TMRURL"),
-	})
-
-	awscognito.NewUserPool(stack, jsii.String("tmruserpool"), &awscognito.UserPoolProps{
-		UserPoolName: jsii.String("Track My Run - userpool"),
 	})
 
 	return stack
