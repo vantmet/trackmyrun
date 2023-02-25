@@ -35,9 +35,9 @@ jobs:
         tag_prefix: "v"
         major_pattern: "BREAK:"
         minor_pattern: "feat:"
-        format: "${major}.${minor}.${patch}-prerelease${increment}"
-        short_tags: true
+        version_format: "${major}.${minor}.${patch}-prerelease${increment}"
         bump_each_commit: false
+        enable_prerelease_mode: true
     
     - name: Build
       run: make -f build/Makefile build-linux
