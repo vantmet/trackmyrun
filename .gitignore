@@ -25,4 +25,4 @@ archive/
 
 docker/app/tmr
 cdk.context.json
-app/tmr
+app/tmr/tmr
