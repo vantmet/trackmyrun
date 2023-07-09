@@ -60,7 +60,7 @@ jobs:
         dockerfile: build/Dockerfile-tmr
         tags: "latest,${{ steps.gsv.outputs.version }}"
         
-    - name: Publish Main App to Registry
+    - name: Publish Auth App to Registry
       uses: elgohr/Publish-Docker-Github-Action@v5
       with:
         name: trackmyrun-auth
