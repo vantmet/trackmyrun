@@ -85,10 +85,12 @@ func (rs *RunnerServer) showRuns(w http.ResponseWriter, r *http.Request, success
 		PageTitle string
 		Runs      []Run
 		Status    bool
+		Version   string
 	}{
 		PageTitle: "My Latest Runs",
 		Runs:      runs,
 		Status:    success,
+		Version:   Version,
 	}
 	f := filepath.Join(rs.htmlRoot, "GetLatest.html")
 	t, err := template.ParseFiles(f)

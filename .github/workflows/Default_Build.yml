@@ -40,6 +40,8 @@ jobs:
         enable_prerelease_mode: true
     
     - name: Build
+      env:
+        VERSION: ${{ steps.gsv.outputs.version}}
       run: make -f build/Makefile build-linux
 
     - name: Login to ECR
