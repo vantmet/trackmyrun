@@ -6,6 +6,7 @@ import (
 	"os"
 
 	chiprometheus "github.com/jamscloud/chi-prometheus"
+	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/vantmet/trackmyrun/pkg/auth"
 
@@ -13,7 +14,19 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
+var Version string
+
+var appVersion prometheus.Gauge
+
 func main() {
+	appVersion := prometheus.NewGauge(prometheus.GaugeOpts{
+		Name:        "app_version_info",
+		Help:        "App info at buildtime",
+		ConstLabels: prometheus.Labels{"version": Version},
+	})
+	prometheus.Register(appVersion)
+	appVersion.Set(1)
+
 	cognitoClient := auth.Init()
 
 	r := chi.NewRouter()

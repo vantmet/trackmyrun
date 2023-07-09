@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+
 	"github.com/aws/aws-cdk-go/awscdk/v2"
 	"github.com/aws/aws-cdk-go/awscdk/v2/awscognito"
 	"github.com/aws/aws-cdk-go/awscdk/v2/awsec2"
@@ -26,8 +28,8 @@ func NewTmrCdkStack(scope constructs.Construct, id string, props *TmrCdkStackPro
 		UserPoolName: jsii.String("Track My Run - userpool"),
 	})
 	userPool.ApplyRemovalPolicy(awscdk.RemovalPolicy_DESTROY)
-	userPool.AddClient(jsii.String("TMR Users"), &awscognito.UserPoolClientOptions{})
-	//clientID := userPoolClient.UserPoolClientId()
+	userPoolClient := userPool.AddClient(jsii.String("TMR Users"), &awscognito.UserPoolClientOptions{})
+	clientID := userPoolClient.UserPoolClientId()
 
 	//Create a VPC + Cluster to live in
 	vpc := awsec2.NewVpc(stack, jsii.String("TMRVPC"), &awsec2.VpcProps{})
@@ -42,9 +44,29 @@ func NewTmrCdkStack(scope constructs.Construct, id string, props *TmrCdkStackPro
 		})
 		imageName := jsii.String(*appImage.ImageUri()) */
 
+	// Add target groups
+	appTargetGroup := awselasticloadbalancingv2.NewApplicationTargetGroup(stack, jsii.String("TRMALB"), &awselasticloadbalancingv2.ApplicationTargetGroupProps{
+		Port:       jsii.Number(5000),
+		Vpc:        vpc,
+		Protocol:   awselasticloadbalancingv2.ApplicationProtocol_HTTP,
+		TargetType: awselasticloadbalancingv2.TargetType_IP,
+		HealthCheck: &awselasticloadbalancingv2.HealthCheck{
+			Path: jsii.String("/ping"),
+		},
+	})
+	authTargetGroup := awselasticloadbalancingv2.NewApplicationTargetGroup(stack, jsii.String("TRMAuthALB"), &awselasticloadbalancingv2.ApplicationTargetGroupProps{
+		Port:       jsii.Number(5000),
+		Vpc:        vpc,
+		Protocol:   awselasticloadbalancingv2.ApplicationProtocol_HTTP,
+		TargetType: awselasticloadbalancingv2.TargetType_IP,
+		HealthCheck: &awselasticloadbalancingv2.HealthCheck{
+			Path: jsii.String("/ping"),
+		},
+	})
+
 	//To Use an existing image.
 	appImageName := jsii.String("606662134411.dkr.ecr.eu-west-2.amazonaws.com/trackmyrun:latest")
-	//authImageName := jsii.String("606662134411.dkr.ecr.eu-west-2.amazonaws.com/trackmyrun-auth:latest")
+	authImageName := jsii.String("606662134411.dkr.ecr.eu-west-2.amazonaws.com/trackmyrun-auth:latest")
 
 	//Create Fargate Service
 	//Task Execution Role
@@ -63,52 +85,80 @@ func NewTmrCdkStack(scope constructs.Construct, id string, props *TmrCdkStackPro
 		Actions:   jsii.Strings("logs:CreateLogGroup", "logs:CreateLogStream", "logs:PutLogEvents"),
 		Resources: jsii.Strings("*"),
 	}))
-	appTaskDefinition := awsecs.NewFargateTaskDefinition(stack, jsii.String("taskDefinition"), &awsecs.FargateTaskDefinitionProps{
+	appTaskDefinition := awsecs.NewFargateTaskDefinition(stack, jsii.String("appTaskDefinition"), &awsecs.FargateTaskDefinitionProps{
 		MemoryLimitMiB: jsii.Number(512),
 		Cpu:            jsii.Number(256),
 		ExecutionRole:  taskExecutionRole,
 		TaskRole:       taskRole,
 	})
 
-	container := appTaskDefinition.AddContainer(jsii.String("taskContainer"), &awsecs.ContainerDefinitionOptions{
+	appContainer := appTaskDefinition.AddContainer(jsii.String("taskContainer"), &awsecs.ContainerDefinitionOptions{
 		Image: awsecs.ContainerImage_FromRegistry(appImageName, &awsecs.RepositoryImageProps{}),
 		Logging: awsecs.LogDriver_AwsLogs(&awsecs.AwsLogDriverProps{
 			StreamPrefix: jsii.String("task"),
 		}),
 	})
 
-	container.AddPortMappings(&awsecs.PortMapping{ContainerPort: jsii.Number(5000)})
+	appContainer.AddPortMappings(&awsecs.PortMapping{ContainerPort: jsii.Number(5000)})
 
-	service := awsecs.NewFargateService(stack, jsii.String("TMRFGService"), &awsecs.FargateServiceProps{
+	authTaskDefinition := awsecs.NewFargateTaskDefinition(stack, jsii.String("authTaskDefinition"), &awsecs.FargateTaskDefinitionProps{
+		MemoryLimitMiB: jsii.Number(512),
+		Cpu:            jsii.Number(256),
+		ExecutionRole:  taskExecutionRole,
+		TaskRole:       taskRole,
+	})
+
+	authContainer := authTaskDefinition.AddContainer(jsii.String("taskContainer"), &awsecs.ContainerDefinitionOptions{
+		Image: awsecs.ContainerImage_FromRegistry(authImageName, &awsecs.RepositoryImageProps{}),
+		Logging: awsecs.LogDriver_AwsLogs(&awsecs.AwsLogDriverProps{
+			StreamPrefix: jsii.String("task"),
+		}),
+	})
+	authContainerPort := float64(5001)
+	authContainerPortString := fmt.Sprintf("%f", authContainerPort)
+
+	authContainer.AddPortMappings(&awsecs.PortMapping{ContainerPort: jsii.Number(authContainerPort)})
+	authContainer.AddEnvironment(jsii.String("PORT"), jsii.String(authContainerPortString))
+	authContainer.AddEnvironment(jsii.String("COGNITO_APP_CLIENT_ID"), jsii.String(*clientID))
+
+	appService := awsecs.NewFargateService(stack, jsii.String("TMR Main Service"), &awsecs.FargateServiceProps{
 		Cluster:        cluster,
 		TaskDefinition: appTaskDefinition,
 		DesiredCount:   jsii.Number(1),
 		AssignPublicIp: jsii.Bool(true),
 	})
 
-	// Add and Application load-balancer
-	targetGroup := awselasticloadbalancingv2.NewApplicationTargetGroup(stack, jsii.String("TRMALB"), &awselasticloadbalancingv2.ApplicationTargetGroupProps{
-		Port:       jsii.Number(5000),
-		Vpc:        vpc,
-		Protocol:   awselasticloadbalancingv2.ApplicationProtocol_HTTP,
-		TargetType: awselasticloadbalancingv2.TargetType_IP,
-		HealthCheck: &awselasticloadbalancingv2.HealthCheck{
-			Path: jsii.String("/ping"),
-		},
+	appService.AttachToApplicationTargetGroup(appTargetGroup)
+
+	authService := awsecs.NewFargateService(stack, jsii.String("TMR Auth Service"), &awsecs.FargateServiceProps{
+		Cluster:        cluster,
+		TaskDefinition: authTaskDefinition,
+		DesiredCount:   jsii.Number(1),
+		AssignPublicIp: jsii.Bool(true),
 	})
+
+	authService.AttachToApplicationTargetGroup(authTargetGroup)
+
 	lb := awselasticloadbalancingv2.NewApplicationLoadBalancer(stack, jsii.String("TMRLB"), &awselasticloadbalancingv2.ApplicationLoadBalancerProps{
 		Vpc:            vpc,
 		InternetFacing: jsii.Bool(true),
 	})
 
-	listener := lb.AddListener(jsii.String("Listener"), &awselasticloadbalancingv2.BaseApplicationListenerProps{
+	applistener := lb.AddListener(jsii.String("appListener"), &awselasticloadbalancingv2.BaseApplicationListenerProps{
 		Port: jsii.Number(80),
 	})
-	listener.AddTargetGroups(jsii.String("FargateVMs"), &awselasticloadbalancingv2.AddApplicationTargetGroupsProps{
-		TargetGroups: &[]awselasticloadbalancingv2.IApplicationTargetGroup{targetGroup},
+	applistener.AddTargetGroups(jsii.String("appVMs"), &awselasticloadbalancingv2.AddApplicationTargetGroupsProps{
+		TargetGroups: &[]awselasticloadbalancingv2.IApplicationTargetGroup{appTargetGroup},
 	})
 
-	service.AttachToApplicationTargetGroup(targetGroup)
+	authlistener := lb.AddListener(jsii.String("authListener"), &awselasticloadbalancingv2.BaseApplicationListenerProps{
+		Port:     jsii.Number(8080),
+		Protocol: awselasticloadbalancingv2.ApplicationProtocol_HTTP,
+	})
+
+	authlistener.AddTargetGroups(jsii.String("authVMs"), &awselasticloadbalancingv2.AddApplicationTargetGroupsProps{
+		TargetGroups: &[]awselasticloadbalancingv2.IApplicationTargetGroup{authTargetGroup},
+	})
 
 	awscdk.NewCfnOutput(stack, jsii.String("URL"), &awscdk.CfnOutputProps{
 		Value:       lb.LoadBalancerDnsName(),
