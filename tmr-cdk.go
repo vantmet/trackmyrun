@@ -30,6 +30,7 @@ func NewTmrCdkStack(scope constructs.Construct, id string, props *TmrCdkStackPro
 	userPool.ApplyRemovalPolicy(awscdk.RemovalPolicy_DESTROY)
 	userPoolClient := userPool.AddClient(jsii.String("TMR Users"), &awscognito.UserPoolClientOptions{})
 	clientID := userPoolClient.UserPoolClientId()
+	poolID := userPool.UserPoolId()
 
 	//Create a VPC + Cluster to live in
 	vpc := awsec2.NewVpc(stack, jsii.String("TMRVPC"), &awsec2.VpcProps{})
@@ -120,6 +121,7 @@ func NewTmrCdkStack(scope constructs.Construct, id string, props *TmrCdkStackPro
 	authContainer.AddPortMappings(&awsecs.PortMapping{ContainerPort: jsii.Number(authContainerPort)})
 	authContainer.AddEnvironment(jsii.String("PORT"), jsii.String(authContainerPortString))
 	authContainer.AddEnvironment(jsii.String("COGNITO_APP_CLIENT_ID"), jsii.String(*clientID))
+	authContainer.AddEnvironment(jsii.String("COGNITO_APP_POOL_ID"), jsii.String(*poolID))
 
 	appService := awsecs.NewFargateService(stack, jsii.String("TMR Main Service"), &awsecs.FargateServiceProps{
 		Cluster:        cluster,

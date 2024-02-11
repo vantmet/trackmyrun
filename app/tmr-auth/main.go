@@ -1,22 +1,48 @@
 package main
 
 import (
+	"context"
 	"fmt"
+	"log"
 	"net/http"
 	"os"
+	"path/filepath"
+	"text/template"
+	"time"
 
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/config"
 	chiprometheus "github.com/jamscloud/chi-prometheus"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
-	"github.com/vantmet/trackmyrun/pkg/auth"
 
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/chi/v5"
+
+	cip "github.com/aws/aws-sdk-go-v2/service/cognitoidentityprovider"
 )
 
 var Version string
 
-var appVersion prometheus.Gauge
+type CognitoClient struct {
+	*cip.Client
+	AppClientID string
+	UserPoolID  string
+}
+
+func Init() *CognitoClient {
+	// Load the shared AWS config (~/.aws/config)
+	cfg, err := config.LoadDefaultConfig(context.Background())
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return &CognitoClient{
+		cip.NewFromConfig(cfg),
+		os.Getenv("COGNITO_APP_CLIENT_ID"),
+		os.Getenv("COGNITO_USER_POOL_ID"),
+	}
+}
 
 func main() {
 	appVersion := prometheus.NewGauge(prometheus.GaugeOpts{
@@ -27,7 +53,7 @@ func main() {
 	prometheus.Register(appVersion)
 	appVersion.Set(1)
 
-	cognitoClient := auth.Init()
+	cognitoClient := Init()
 
 	r := chi.NewRouter()
 	r.Use(middleware.RequestID)
@@ -39,11 +65,10 @@ func main() {
 	r.Use(middleware.Recoverer)
 
 	r.Handle("/metrics", promhttp.Handler())
-	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("welcome"))
-	})
+	r.HandleFunc("/favicon.ico", faviconHandler)
+	r.Get("/", http.HandlerFunc(handleIndex))
 
-	// r.Post("/signup", signUp)
+	r.Post("/signup", cognitoClient.signUp)
 
 	// r.Post("/signin", signIn)
 
@@ -56,4 +81,52 @@ func main() {
 
 	fmt.Printf("starting server on port %s!", port)
 	http.ListenAndServe(fmt.Sprintf(":%s", port), r)
+}
+
+func handleIndex(w http.ResponseWriter, r *http.Request) {
+	data := struct {
+		PageTitle string
+		Version   string
+	}{
+		PageTitle: "Welcome!",
+		Version:   Version,
+	}
+	f := filepath.Join(filepath.FromSlash("web/html"), "SignUp.html")
+	t, err := template.ParseFiles(f)
+
+	if err == nil {
+		t.Execute(w, data)
+	} else {
+		log.Printf("Template error: %q", err)
+	}
+}
+func faviconHandler(w http.ResponseWriter, r *http.Request) {
+	http.ServeFile(w, r, "web/html/favicon.ico")
+}
+
+func (cc *CognitoClient) signUp(w http.ResponseWriter, r *http.Request) {
+	r.ParseForm()
+
+	username := r.Form.Get("username")
+	password := r.Form.Get("password")
+	// phoneNumber := r.Form.Get("phone_number")
+
+	user := &cip.SignUpInput{
+		Username: aws.String(username),
+		Password: aws.String(password),
+		ClientId: aws.String(cc.AppClientID),
+	}
+
+	d := time.Now().Add(time.Minute)
+	ctx, cancel := context.WithDeadline(context.Background(), d)
+	defer cancel()
+
+	_, err := cc.Client.SignUp(ctx, user)
+	if err != nil {
+		fmt.Println(err)
+		http.Redirect(w, r, fmt.Sprintf("/register?message=%s", err.Error()), http.StatusSeeOther)
+		return
+	}
+
+	http.Redirect(w, r, fmt.Sprintf("/otp?username=%s", username), http.StatusFound)
 }

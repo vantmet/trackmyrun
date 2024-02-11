@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>{{.PageTitle}}</title>        
+	</head>
+	<body>
+        <h1>Welcome!</h1>
+        <form id="newUser" action="/signup" method="post" name="userData">
+            <input type="text" id="username" name="username" required/>
+            <label for="Username">Username</label>
+            <input type="password" id="password" name="password" required/>
+            <label for="password"></label>
+
+            <input value="submit" type="submit">
+        </form>
+        <p>Current App Version: {{.Version}}</p>
+	</body>
+</html>
