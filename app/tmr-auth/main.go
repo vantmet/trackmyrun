@@ -50,7 +50,10 @@ func main() {
 	// r.Get("/verify", verifyToken)
 
 	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8000"
+	}
 
-	fmt.Println("starting server!")
+	fmt.Printf("starting server on port %s!", port)
 	http.ListenAndServe(fmt.Sprintf(":%s", port), r)
 }
