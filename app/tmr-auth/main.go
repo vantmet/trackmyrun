@@ -53,7 +53,7 @@ func main() {
 	prometheus.Register(appVersion)
 	appVersion.Set(1)
 
-	log.Println("App Version %s, registered in Prometheus", version)
+	log.Println("App Version %s, registered in Prometheus", Version)
 
 	cognitoClient := Init()
 
