@@ -53,7 +53,7 @@ func main() {
 	prometheus.Register(appVersion)
 	appVersion.Set(1)
 
-	log.Println("App Version %s, registered in Prometheus", Version)
+	log.Println("App Version ", Version, ", registered in Prometheus")
 
 	cognitoClient := Init()
 
@@ -85,9 +85,7 @@ func main() {
 		port = "8000"
 	}
 
-	log.Println("Listening Port configured: %s", port)
-
-	log.Println("starting server on port %s!", port)
+	log.Println("Listening Port configured, starting server on:", port)
 	http.ListenAndServe(fmt.Sprintf(":%s", port), r)
 }
 
