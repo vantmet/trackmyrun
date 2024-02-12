@@ -53,7 +53,11 @@ func main() {
 	prometheus.Register(appVersion)
 	appVersion.Set(1)
 
+	log.Println("App Version %s, registered in Prometheus", version)
+
 	cognitoClient := Init()
+
+	log.Println("Cognito Client Inititated")
 
 	r := chi.NewRouter()
 	r.Use(middleware.RequestID)
@@ -74,12 +78,16 @@ func main() {
 
 	// r.Get("/verify", verifyToken)
 
+	log.Println("Handlers Initiated")
+
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8000"
 	}
 
-	fmt.Printf("starting server on port %s!", port)
+	log.Println("Listening Port configured: %s", port)
+
+	log.Println("starting server on port %s!", port)
 	http.ListenAndServe(fmt.Sprintf(":%s", port), r)
 }
 
