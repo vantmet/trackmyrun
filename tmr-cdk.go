@@ -7,6 +7,7 @@ import (
 	"github.com/aws/aws-cdk-go/awscdk/v2/awsecs"
 	"github.com/aws/aws-cdk-go/awscdk/v2/awselasticloadbalancingv2"
 	"github.com/aws/aws-cdk-go/awscdk/v2/awsiam"
+	"github.com/aws/aws-cdk-go/awscdk/v2/awslogs"
 	"github.com/aws/constructs-go/constructs/v10"
 	"github.com/aws/jsii-runtime-go"
 )
@@ -95,10 +96,14 @@ func NewTmrCdkStack(scope constructs.Construct, id string, props *TmrCdkStackPro
 		Image: awsecs.ContainerImage_FromRegistry(appImageName, &awsecs.RepositoryImageProps{}),
 		Logging: awsecs.LogDriver_AwsLogs(&awsecs.AwsLogDriverProps{
 			StreamPrefix: jsii.String("task"),
+			LogRetention: awslogs.RetentionDays_THREE_MONTHS,
 		}),
 	})
+	appContainerPort := float64(5000)
+	appContainerPortString := "5000"
 
-	appContainer.AddPortMappings(&awsecs.PortMapping{ContainerPort: jsii.Number(5000)})
+	appContainer.AddPortMappings(&awsecs.PortMapping{ContainerPort: jsii.Number(appContainerPort)})
+	appContainer.AddEnvironment(jsii.String("PORT"), jsii.String(appContainerPortString))
 
 	authTaskDefinition := awsecs.NewFargateTaskDefinition(stack, jsii.String("authTaskDefinition"), &awsecs.FargateTaskDefinitionProps{
 		MemoryLimitMiB: jsii.Number(512),
@@ -111,6 +116,7 @@ func NewTmrCdkStack(scope constructs.Construct, id string, props *TmrCdkStackPro
 		Image: awsecs.ContainerImage_FromRegistry(authImageName, &awsecs.RepositoryImageProps{}),
 		Logging: awsecs.LogDriver_AwsLogs(&awsecs.AwsLogDriverProps{
 			StreamPrefix: jsii.String("task"),
+			LogRetention: awslogs.RetentionDays_THREE_MONTHS,
 		}),
 	})
 	authContainerPort := float64(5001)
