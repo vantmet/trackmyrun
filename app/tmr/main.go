@@ -1,12 +1,13 @@
 package main
 
 import (
+	"log"
 	"net/http"
+	"os"
 	"path/filepath"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
-	chiprometheus "github.com/jamscloud/chi-prometheus"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
@@ -23,6 +24,9 @@ func main() {
 	})
 	prometheus.Register(appVersion)
 	appVersion.Set(1)
+
+	log.Println("App Version ", Version, ", registered in Prometheus")
+
 	store := InMemoryRunnerStore{}
 	server := RunnerServer{&store, filepath.FromSlash("html")}
 
@@ -31,9 +35,6 @@ func main() {
 	r.Use(middleware.RealIP)
 	r.Use(middleware.Logger)
 	r.Use(middleware.Heartbeat("/ping"))
-	m := chiprometheus.NewMiddleware("Track My Run")
-
-	r.Use(m)
 	r.Use(middleware.Recoverer)
 
 	r.Handle("/metrics", promhttp.Handler())
@@ -43,6 +44,13 @@ func main() {
 
 	r.Get("/runs", server.ServeHTTP)
 	r.Post("/runs", server.ServeHTTP)
+	log.Println("Handlers Initiated")
+
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "5000"
+	}
+	log.Println("Listening Port configured, starting server on:", port)
 	http.ListenAndServe(":5000", r)
 
 }

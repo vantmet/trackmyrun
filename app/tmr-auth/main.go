@@ -12,7 +12,6 @@ import (
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
-	chiprometheus "github.com/jamscloud/chi-prometheus"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 
@@ -36,11 +35,17 @@ func Init() *CognitoClient {
 	if err != nil {
 		log.Fatal(err)
 	}
+	AppID := os.Getenv("COGNITO_APP_CLIENT_ID")
+	PoolID := os.Getenv("COGNITO_USER_POOL_ID")
 
+	log.Println("AWS Region ", cfg.Region)
+	log.Println("AppID ", AppID)
+	log.Println("PoolID ", PoolID)
+	log.Println("Configuring Cognito Client ", cfg.Region)
 	return &CognitoClient{
 		cip.NewFromConfig(cfg),
-		os.Getenv("COGNITO_APP_CLIENT_ID"),
-		os.Getenv("COGNITO_USER_POOL_ID"),
+		AppID,
+		PoolID,
 	}
 }
 
@@ -64,8 +69,6 @@ func main() {
 	r.Use(middleware.RealIP)
 	r.Use(middleware.Logger, middleware.WithValue("CognitoClient", cognitoClient))
 	r.Use(middleware.Heartbeat("/ping"))
-	m := chiprometheus.NewMiddleware("serviceName")
-	r.Use(m)
 	r.Use(middleware.Recoverer)
 
 	r.Handle("/metrics", promhttp.Handler())
@@ -82,7 +85,7 @@ func main() {
 
 	port := os.Getenv("PORT")
 	if port == "" {
-		port = "8000"
+		port = "5001"
 	}
 
 	log.Println("Listening Port configured, starting server on:", port)
@@ -97,7 +100,7 @@ func handleIndex(w http.ResponseWriter, r *http.Request) {
 		PageTitle: "Welcome!",
 		Version:   Version,
 	}
-	f := filepath.Join(filepath.FromSlash("web/html"), "SignUp.html")
+	f := filepath.Join(filepath.FromSlash("html"), "SignUp.html")
 	t, err := template.ParseFiles(f)
 
 	if err == nil {
@@ -107,7 +110,7 @@ func handleIndex(w http.ResponseWriter, r *http.Request) {
 	}
 }
 func faviconHandler(w http.ResponseWriter, r *http.Request) {
-	http.ServeFile(w, r, "web/html/favicon.ico")
+	http.ServeFile(w, r, "html/favicon.ico")
 }
 
 func (cc *CognitoClient) signUp(w http.ResponseWriter, r *http.Request) {
