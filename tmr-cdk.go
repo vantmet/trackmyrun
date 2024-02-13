@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-
 	"github.com/aws/aws-cdk-go/awscdk/v2"
 	"github.com/aws/aws-cdk-go/awscdk/v2/awscognito"
 	"github.com/aws/aws-cdk-go/awscdk/v2/awsec2"
@@ -116,7 +114,7 @@ func NewTmrCdkStack(scope constructs.Construct, id string, props *TmrCdkStackPro
 		}),
 	})
 	authContainerPort := float64(5001)
-	authContainerPortString := fmt.Sprintf("%f", authContainerPort)
+	authContainerPortString := "5001"
 
 	authContainer.AddPortMappings(&awsecs.PortMapping{ContainerPort: jsii.Number(authContainerPort)})
 	authContainer.AddEnvironment(jsii.String("PORT"), jsii.String(authContainerPortString))
