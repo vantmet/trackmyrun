@@ -12,6 +12,7 @@ import (
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
+	chiprometheus "github.com/jamscloud/chi-prometheus"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 
@@ -69,6 +70,8 @@ func main() {
 	r.Use(middleware.RealIP)
 	r.Use(middleware.Logger, middleware.WithValue("CognitoClient", cognitoClient))
 	r.Use(middleware.Heartbeat("/ping"))
+	m := chiprometheus.NewMiddleware("serviceName")
+	r.Use(m)
 	r.Use(middleware.Recoverer)
 
 	r.Handle("/metrics", promhttp.Handler())

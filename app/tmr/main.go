@@ -8,6 +8,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	chiprometheus "github.com/jamscloud/chi-prometheus"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
@@ -35,6 +36,9 @@ func main() {
 	r.Use(middleware.RealIP)
 	r.Use(middleware.Logger)
 	r.Use(middleware.Heartbeat("/ping"))
+	m := chiprometheus.NewMiddleware("Track My Run")
+
+	r.Use(m)
 	r.Use(middleware.Recoverer)
 
 	r.Handle("/metrics", promhttp.Handler())
