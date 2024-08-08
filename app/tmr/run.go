@@ -15,13 +15,13 @@ type RunTime struct {
 
 type Run struct {
 	Date     time.Time
-	Distance float32 //All distances stored in km.
+	Distance float32 //All distances stored in m.
 	RunTime  RunTime
 }
 
 type PlanRun struct {
 	Date     time.Time
-	Distance float32 //All distances stored in km.
+	Distance float32 //All distances stored in m.
 }
 
 func GetDistanceKm(d float64) string {
@@ -38,11 +38,11 @@ func GetDistanceKm(d float64) string {
 
 func (r Run) GetRunDistanceKm() string {
 
-	return GetDistanceKm(float64(r.Distance))
+	return GetDistanceKm(float64(r.Distance) / 1000.0)
 }
 
 func (r PlanRun) GetRunDistanceKm() string {
-	return GetDistanceKm(float64(r.Distance))
+	return GetDistanceKm(float64(r.Distance) / 1000.0)
 }
 
 func (r Run) GetRunTime() RunTime {
@@ -57,12 +57,13 @@ func (r Run) GetRunPace() string {
 
 	if r.Distance > 0 {
 		// Pace is minutes per Km.
+		kmDistance := float64(r.Distance) / 1000.0
 		// Calculate total time in secs (no division needed)
 		timeInSecs := float64(r.RunTime.Seconds)
 		timeInSecs += float64(r.RunTime.Minutes * 60)
 		timeInSecs += float64(r.RunTime.Hours * 60 * 60)
 
-		pace := timeInSecs / float64(r.Distance) // pace in secs/km
+		pace := timeInSecs / float64(kmDistance) // pace in secs/km
 		//divide pace by 60 to give pace in min.
 		return strconv.FormatFloat(pace/60, 'f', 2, 64)
 	} else {
