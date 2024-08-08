@@ -57,8 +57,9 @@ func (rs *RunnerServer) processRun(w http.ResponseWriter, r *http.Request) {
 		//parse Date
 		const shortForm = "2006-01-02T15:04"
 		fDate, _ := time.Parse(shortForm, fDateString)
-		//Pase Distance.
+		//Parse Distance
 		fDist, _ := strconv.ParseFloat(fDistString, 32)
+		fDist = fDist * 1000.0 //Convert to meters
 		//Parse runtime
 		chunks := strings.Split(fRunTimeString, ":")
 		fHours, _ := strconv.ParseInt(chunks[0], 10, 32)
@@ -71,6 +72,7 @@ func (rs *RunnerServer) processRun(w http.ResponseWriter, r *http.Request) {
 		run.RunTime.Hours = int(fHours)
 		run.RunTime.Minutes = int(fMins)
 		run.RunTime.Seconds = float32(fSecs)
+		log.Printf("Saved Run: %v", run)
 
 	}
 	rs.store.RecordRun(run)

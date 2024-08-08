@@ -20,12 +20,12 @@ func TestRun(t *testing.T) {
 		DateWant       string
 	}{
 		{"0Km Run", Run{dateSet, 0, RunTime{0, 4, 1}}, "Invalid Distance", RunTime{0, 4, 1}, "0:4:1", "Invalid Distance", dateWant},
-		{"-10Km Run", Run{dateSet, -10, RunTime{0, 4, 1}}, "Invalid Distance", RunTime{0, 4, 1}, "0:4:1", "Invalid Distance", dateWant},
-		{"1Km Run", Run{dateSet, 1, RunTime{0, 4, 1}}, "1km", RunTime{0, 4, 1}, "0:4:1", "4.02", dateWant},
-		{"5Km Run", Run{dateSet, 5, RunTime{0, 34, 1}}, "5km", RunTime{0, 34, 1}, "0:34:1", "6.80", dateWant},
-		{"5Km Run", Run{dateSet, 5.42, RunTime{0, 34, 52}}, "5.42km", RunTime{0, 34, 52}, "0:34:52", "6.43", dateWant},
-		{"10Km Run", Run{dateSet, 10, RunTime{1, 4, 1}}, "10km", RunTime{1, 4, 1}, "1:4:1", "6.40", dateWant},
-		{"100Km Run", Run{dateSet, 100, RunTime{36, 4, 1}}, "100km", RunTime{36, 4, 1}, "36:4:1", "21.64", dateWant},
+		{"-10Km Run", Run{dateSet, -10000, RunTime{0, 4, 1}}, "Invalid Distance", RunTime{0, 4, 1}, "0:4:1", "Invalid Distance", dateWant},
+		{"1Km Run", Run{dateSet, 1000, RunTime{0, 4, 1}}, "1km", RunTime{0, 4, 1}, "0:4:1", "4.02", dateWant},
+		{"5Km Run", Run{dateSet, 5000, RunTime{0, 34, 1}}, "5km", RunTime{0, 34, 1}, "0:34:1", "6.80", dateWant},
+		{"5Km Run", Run{dateSet, 5420, RunTime{0, 34, 52}}, "5.42km", RunTime{0, 34, 52}, "0:34:52", "6.43", dateWant},
+		{"10Km Run", Run{dateSet, 10000, RunTime{1, 4, 1}}, "10km", RunTime{1, 4, 1}, "1:4:1", "6.40", dateWant},
+		{"100Km Run", Run{dateSet, 100000, RunTime{36, 4, 1}}, "100km", RunTime{36, 4, 1}, "36:4:1", "21.64", dateWant},
 	}
 
 	for _, test := range cases {
@@ -73,12 +73,12 @@ func TestPlanRun(t *testing.T) {
 		DateWant    string
 	}{
 		{"0Km Run", PlanRun{dateSet, 0}, "Invalid Distance", dateWant},
-		{"-10Km Run", PlanRun{dateSet, -10}, "Invalid Distance", dateWant},
-		{"1Km Run", PlanRun{dateSet, 1}, "1km", dateWant},
-		{"5Km Run", PlanRun{dateSet, 5}, "5km", dateWant},
-		{"5Km Run", PlanRun{dateSet, 5.42}, "5.42km", dateWant},
-		{"10Km Run", PlanRun{dateSet, 10}, "10km", dateWant},
-		{"100Km Run", PlanRun{dateSet, 100}, "100km", dateWant},
+		{"-10Km Run", PlanRun{dateSet, -10000}, "Invalid Distance", dateWant},
+		{"1Km Run", PlanRun{dateSet, 1000}, "1km", dateWant},
+		{"5Km Run", PlanRun{dateSet, 5000}, "5km", dateWant},
+		{"5Km Run", PlanRun{dateSet, 5420}, "5.42km", dateWant},
+		{"10Km Run", PlanRun{dateSet, 10000}, "10km", dateWant},
+		{"100Km Run", PlanRun{dateSet, 100000}, "100km", dateWant},
 	}
 
 	for _, test := range cases {

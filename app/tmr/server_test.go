@@ -18,7 +18,7 @@ func TestGETRuns(t *testing.T) {
 		[]Run{
 			{
 				Date:     date,
-				Distance: 5.42,
+				Distance: 5420,
 				RunTime:  RunTime{0, 34, 52},
 			},
 		},
@@ -68,7 +68,7 @@ func TestStoreRun(t *testing.T) {
 	date, _ := time.Parse(shortForm, "2013-Feb-03")
 	run := Run{
 		Date:     date,
-		Distance: 5.42,
+		Distance: 5420,
 		RunTime:  RunTime{0, 34, 52},
 	}
 
