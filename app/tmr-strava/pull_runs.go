@@ -9,6 +9,8 @@ import (
 	"net/http"
 	"os"
 	"time"
+
+	"github.com/joho/godotenv"
 )
 
 // create a new struct to hold the run data
@@ -39,6 +41,12 @@ type StravaToken struct {
 func main() {
 	// refresh the token
 	var st StravaToken
+
+	// load env vars
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Environment not loaded.")
+	}
 	st.AccessToken = os.Getenv("STRAVA_ACCESS_TOKEN")
 	st.ExpiresAt = 1723166586
 	if time.Now().Unix() > int64(st.ExpiresAt) {
