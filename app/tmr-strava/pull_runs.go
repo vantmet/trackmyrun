@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"io"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -96,7 +95,7 @@ func refreshToken() (string, int) {
 	defer resp.Body.Close()
 
 	// Debug: Print the response status and body
-	body, _ := ioutil.ReadAll(resp.Body)
+	body, _ := io.ReadAll(resp.Body)
 	log.Printf("Response Status: %s", resp.Status)
 	log.Printf("Response Body: %s", body)
 
