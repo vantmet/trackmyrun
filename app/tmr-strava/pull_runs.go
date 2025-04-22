@@ -40,6 +40,7 @@ type StravaToken struct {
 func main() {
 	// refresh the token
 	var st StravaToken
+	url := "https://www.strava.com/api/v3/oauth/token"
 
 	// load env vars
 	err := godotenv.Load()
@@ -62,7 +63,7 @@ func main() {
 }
 
 // create a new function to refresh the token
-func refreshToken() (string, int) {
+func refreshToken(baseURL string) (st StravaToken, err error) {
 	userAuth := Auth{
 		StravaClientID:     os.Getenv("STRAVA_CLIENT_ID"),
 		StravaClientSecret: os.Getenv("STRAVA_CLIENT_SECRET"),
@@ -78,7 +79,7 @@ func refreshToken() (string, int) {
 	client := &http.Client{}
 
 	// create a new request
-	req, err := http.NewRequest("POST", "https://www.strava.com/api/v3/oauth/token", bytes.NewBuffer(authStr))
+	req, err := http.NewRequest("POST", baseURL, bytes.NewBuffer(authStr))
 	if err != nil {
 		log.Fatalf("Error creating request: %v", err)
 	}
