@@ -3,12 +3,14 @@ package main
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
 	"time"
+
+	"github.com/joho/godotenv"
 )
 
 // create a new struct to hold the run data
@@ -24,7 +26,7 @@ type StravaActivity struct {
 type Auth struct {
 	StravaClientID     string `json:"client_id"`
 	StravaClientSecret string `json:"client_secret"`
-	Code               string `json:"code"`
+	RefreshToken       string `json:"refresh_token"`
 	GrantType          string `json:"grant_type"`
 }
 
@@ -39,12 +41,23 @@ type StravaToken struct {
 func main() {
 	// refresh the token
 	var st StravaToken
+	url := "https://www.strava.com/api/v3/oauth/token"
+
+	// load env vars
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Environment not loaded.")
+	}
 	st.AccessToken = os.Getenv("STRAVA_ACCESS_TOKEN")
 	st.ExpiresAt = 1723166586
 	if time.Now().Unix() > int64(st.ExpiresAt) {
-		st.AccessToken, st.ExpiresAt = refreshToken()
+		st, err = refreshToken(url)
 	}
-	log.Printf("Access Token: %s", st.AccessToken)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	log.Printf("Access Token: valid.")
 	// get the strava runs
 	runs := getStravaRuns(st.AccessToken)
 
@@ -55,12 +68,16 @@ func main() {
 }
 
 // create a new function to refresh the token
-func refreshToken() (string, int) {
+func refreshToken(baseURL string) (st StravaToken, err error) {
 	userAuth := Auth{
 		StravaClientID:     os.Getenv("STRAVA_CLIENT_ID"),
 		StravaClientSecret: os.Getenv("STRAVA_CLIENT_SECRET"),
-		Code:               os.Getenv("STRAVA_ACCESS_CODE"),
+		RefreshToken:       os.Getenv("STRAVA_REFRESH_TOKEN"),
 		GrantType:          "refresh_token",
+	}
+	if userAuth.RefreshToken == "" || userAuth.StravaClientID == "" || userAuth.StravaClientSecret == "" {
+		err = fmt.Errorf("Environment not complete. %q", userAuth)
+		return st, err
 	}
 	authStr, _ := json.Marshal(userAuth)
 
@@ -71,7 +88,7 @@ func refreshToken() (string, int) {
 	client := &http.Client{}
 
 	// create a new request
-	req, err := http.NewRequest("POST", "https://www.strava.com/api/v3/oauth/token", bytes.NewBuffer(authStr))
+	req, err := http.NewRequest("POST", baseURL, bytes.NewBuffer(authStr))
 	if err != nil {
 		log.Fatalf("Error creating request: %v", err)
 	}
@@ -88,7 +105,7 @@ func refreshToken() (string, int) {
 	defer resp.Body.Close()
 
 	// Debug: Print the response status and body
-	body, _ := ioutil.ReadAll(resp.Body)
+	body, _ := io.ReadAll(resp.Body)
 	log.Printf("Response Status: %s", resp.Status)
 	log.Printf("Response Body: %s", body)
 
@@ -99,7 +116,7 @@ func refreshToken() (string, int) {
 		log.Fatalf("Error parsing response: %v", err)
 	}
 
-	return tokenResponse.AccessToken, tokenResponse.ExpiresAt
+	return tokenResponse, nil
 }
 
 // create a new function to get the strava runs
@@ -124,7 +141,7 @@ func getStravaRuns(token string) []StravaActivity {
 	q.Add("per_page", "10")
 	req.URL.RawQuery = q.Encode()
 
-	log.Printf("Getting Runs, %s", req)
+	log.Printf("Getting Runs, %s", req.URL)
 	// send the request
 	resp, err := client.Do(req)
 	if err != nil {
