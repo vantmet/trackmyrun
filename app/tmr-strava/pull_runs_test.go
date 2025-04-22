@@ -17,7 +17,7 @@ func TestRefreshToken(t *testing.T) {
 
 	server := httptest.NewServer(
 		http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			w.Write([]byte(`{"token_type":"Bearer","access_token":"12345","expires_at":1745348271,"expires_in":15104,"refresh_token":"eb37d2af13c20bf92b390aa6337edd0fb4e321a0"}`))
+			w.Write([]byte(`{"token_type":"Bearer","access_token":"12345","expires_at":1745348271,"expires_in":15104,"refresh_token":"arefreshtoken"}`))
 		}))
 	defer server.Close()
 	result, err := refreshToken(server.URL)
