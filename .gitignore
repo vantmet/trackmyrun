@@ -28,3 +28,4 @@ cdk.context.json
 app/tmr/tmr
 app/tmr-auth/tmr-auth
 .env
+token.json

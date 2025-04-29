@@ -46,24 +46,34 @@ type StravaToken struct {
 func main() {
 	// refresh the token
 	var st StravaToken
+	url := "https://www.strava.com/oauth/token"
 
 	// load env vars
 	err := godotenv.Load()
 	if err != nil {
 		log.Fatal("Environment not loaded.")
 	}
-	// TODO
-	// 1) Save the token we get after exchange to a file.
-	// 2) Check the file to see if we need to request access using master creds
-	// 3) Check to see if we need to refresh the token,
-	tok := requestAccess()
-	url := "https://www.strava.com/oauth/token"
-	os.Setenv("STRAVA_ACCESS_TOKEN", tok)
-	st, err = exchangeToken(url)
-	if err != nil {
-		log.Fatal(err)
-	}
 
+	//load the TokenCache if available
+	stRaw, err := os.ReadFile("token.json")
+	if err != nil {
+		log.Println("Unable to open token.json continuing.")
+		// TODO
+		// 1) Save the token we get after exchange to a file.
+		// 2) Check the file to see if we need to request access using master creds
+		// 3) Check to see if we need to refresh the token,
+		tok := requestAccess()
+		os.Setenv("STRAVA_ACCESS_TOKEN", tok)
+		st, err = exchangeToken(url)
+		if err != nil {
+			log.Fatal(err)
+		}
+	} else {
+		err = json.Unmarshal(stRaw, &st)
+		if err != nil {
+			log.Fatal("Unable to unmarshall token")
+		}
+	}
 	//st.AccessToken = os.Getenv("STRAVA_ACCESS_TOKEN")
 	if time.Now().Unix() > int64(st.ExpiresAt) {
 		st, err = refreshToken(url)
@@ -73,6 +83,10 @@ func main() {
 	}
 
 	log.Printf("Access Token: valid.")
+	//Write token out to file
+	output, _ := json.Marshal(st)
+
+	err = os.WriteFile("token.json", output, 0644)
 	// get the strava runs
 	runs := getStravaRuns(st.AccessToken)
 
