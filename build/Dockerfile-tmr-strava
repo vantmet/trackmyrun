@@ -1,0 +1,4 @@
+FROM ubuntu:latest
+WORKDIR /opt/tmr
+COPY app/tmr-strava/tmr-strava .
+ENTRYPOINT ["./tmr-strava"]
