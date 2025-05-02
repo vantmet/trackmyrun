@@ -20,7 +20,7 @@ func TestRefreshToken(t *testing.T) {
 			w.Write([]byte(`{"token_type":"Bearer","access_token":"12345","expires_at":1745348271,"expires_in":15104,"refresh_token":"arefreshtoken"}`))
 		}))
 	defer server.Close()
-	result, err := refreshToken(server.URL)
+	result, err := getrefreshedToken(server.URL, "aToken")
 
 	if result.AccessToken != want.AccessToken || err != nil {
 		t.Errorf("Unable to refresh token: %q", err)
@@ -30,7 +30,7 @@ func TestRefreshToken(t *testing.T) {
 func TestEnv(t *testing.T) {
 	want := ""
 	url := "https://test.server"
-	result, err := refreshToken(url)
+	result, err := getrefreshedToken(url, "aToken")
 
 	// Mock the ENVVars
 	t.Setenv("STRAVA_CLIENT_ID", "")
