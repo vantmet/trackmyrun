@@ -32,7 +32,7 @@ type RefreshToken struct {
 // Initial Access Request
 func requestAccess() (access_tok string) {
 	fmt.Println("Please go to the following URL and Authorizxe the app. Once redirected copy the 'code' and paste it here. Then hit return.")
-	fmt.Printf("https://www.strava.com/oath/authorize?client_id=%s&response_type=code&redirect_uri=http://localhost/ex_tok&approval_prompt=force&scope=read_all,activity:read_all\n: ", os.Getenv("STRAVA_CLIENT_ID"))
+	fmt.Printf("https://www.strava.com/oauth/authorize?client_id=%s&response_type=code&redirect_uri=http://localhost/ex_tok&approval_prompt=force&scope=read_all,activity:read\n: ", os.Getenv("STRAVA_CLIENT_ID"))
 
 	reader := bufio.NewReader(os.Stdin)
 
@@ -52,7 +52,7 @@ func exchangeToken(baseURL string) (st StravaToken, err error) {
 	etString, _ := json.Marshal(et)
 
 	// Debug: Print the userAuth struct
-	log.Printf("Exchange Token: %+v", et)
+	// log.Printf("Exchange Token: %+v", et)
 
 	// create a new http client
 	client := &http.Client{}
@@ -92,11 +92,11 @@ func exchangeToken(baseURL string) (st StravaToken, err error) {
 }
 
 // create a new function to refresh the token
-func refreshToken(baseURL string) (st StravaToken, err error) {
+func getrefreshedToken(baseURL string, refreshToken string) (st StravaToken, err error) {
 	userAuth := RefreshToken{
 		StravaClientID:     os.Getenv("STRAVA_CLIENT_ID"),
 		StravaClientSecret: os.Getenv("STRAVA_CLIENT_SECRET"),
-		RefreshToken:       os.Getenv("STRAVA_REFRESH_TOKEN"),
+		RefreshToken:       refreshToken,
 		GrantType:          "refresh_token",
 	}
 	if userAuth.RefreshToken == "" || userAuth.StravaClientID == "" || userAuth.StravaClientSecret == "" {
@@ -118,7 +118,7 @@ func refreshToken(baseURL string) (st StravaToken, err error) {
 	}
 
 	// Debug: Print the request body
-	log.Printf("Request Body: %s", authStr)
+	// log.Printf("Request Body: %s", authStr)
 
 	// Add headers and send the request
 	req.Header.Set("Content-Type", "application/json")

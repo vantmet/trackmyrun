@@ -28,7 +28,6 @@ type StravaToken struct {
 }
 
 func main() {
-	// refresh the token
 	var st StravaToken
 	url := "https://www.strava.com/oauth/token"
 
@@ -55,8 +54,11 @@ func main() {
 		}
 	}
 	//st.AccessToken = os.Getenv("STRAVA_ACCESS_TOKEN")
+	convertedTime := time.Unix(int64(st.ExpiresAt), 0)
+	log.Printf("Token Expires: %q", convertedTime)
 	if time.Now().Unix() > int64(st.ExpiresAt) {
-		st, err = refreshToken(url)
+		log.Println("Token Expired, refreshing...")
+		st, err = getrefreshedToken(url, st.RefreshToken)
 	}
 	if err != nil {
 		log.Fatal(err)
@@ -64,16 +66,14 @@ func main() {
 
 	log.Printf("Access Token: valid.")
 	//Write token out to file
-	output, _ := json.Marshal(st)
+	output, _ := json.MarshalIndent(st, "", "  ")
 
 	err = os.WriteFile("token.json", output, 0644)
 	// get the strava runs
 	runs := getStravaRuns(st.AccessToken)
 
-	// print the runs
-	for _, run := range runs {
-		log.Println(run)
-	}
+	// log the number of runs collected
+	log.Printf("Retrieved %d runs.", len(runs))
 }
 
 // create a new function to get the strava runs
@@ -92,6 +92,7 @@ func getStravaRuns(token string) []StravaActivity {
 	req.Header.Add("Authorization", "Bearer "+token)
 	req.Header.Add("Accept", "application/json")
 	req.Header.Add("User-Agent", "TMR-Strava")
+	// log.Println(req.Header)
 
 	//add query params
 	q := req.URL.Query()
