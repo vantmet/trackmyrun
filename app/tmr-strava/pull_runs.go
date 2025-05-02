@@ -20,22 +20,6 @@ type StravaActivity struct {
 	ActivityType string    `json:"type"`
 }
 
-type ExchangeToken struct {
-	StravaClientID     string `json:"client_id"`
-	StravaClientSecret string `json:"client_secret"`
-	Code               string `json:"code"`
-	GrantType          string `json:"grant_type"`
-}
-
-// create a new authentication struct
-type RefreshToken struct {
-	StravaClientID     string `json:"client_id"`
-	StravaClientSecret string `json:"client_secret"`
-	RefreshToken       string `json:"refresh_token"`
-	GrantType          string `json:"grant_type"`
-}
-
-// create a struct to hold token refresh respone
 type StravaToken struct {
 	AccessToken  string `json:"access_token"`
 	ExpiresAt    int    `json:"expires_at"`
@@ -58,10 +42,6 @@ func main() {
 	stRaw, err := os.ReadFile("token.json")
 	if err != nil {
 		log.Println("Unable to open token.json continuing.")
-		// TODO
-		// 1) Save the token we get after exchange to a file.
-		// 2) Check the file to see if we need to request access using master creds
-		// 3) Check to see if we need to refresh the token,
 		tok := requestAccess()
 		os.Setenv("STRAVA_ACCESS_TOKEN", tok)
 		st, err = exchangeToken(url)

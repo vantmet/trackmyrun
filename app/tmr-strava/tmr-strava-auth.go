@@ -13,6 +13,22 @@ import (
 	"strings"
 )
 
+type ExchangeToken struct {
+	StravaClientID     string `json:"client_id"`
+	StravaClientSecret string `json:"client_secret"`
+	Code               string `json:"code"`
+	GrantType          string `json:"grant_type"`
+}
+
+// create a new authentication struct
+type RefreshToken struct {
+	StravaClientID     string `json:"client_id"`
+	StravaClientSecret string `json:"client_secret"`
+	RefreshToken       string `json:"refresh_token"`
+	GrantType          string `json:"grant_type"`
+}
+
+// create a struct to hold token refresh respone
 // Initial Access Request
 func requestAccess() (access_tok string) {
 	fmt.Println("Please go to the following URL and Authorizxe the app. Once redirected copy the 'code' and paste it here. Then hit return.")
