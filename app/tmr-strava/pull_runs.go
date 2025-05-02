@@ -139,7 +139,7 @@ func getStravaRuns(token string) []StravaActivity {
 		log.Println("Error reading response", err)
 		return nil
 	}
-	log.Println("Response Body:", string(body))
+	// log.Println("Response Body:", string(body))
 	// parse the response
 	// create variable to hold runs
 	var runs []StravaActivity
