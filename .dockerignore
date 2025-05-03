@@ -1,4 +1,5 @@
 *
 !app/tmr
 !app/tmr-auth
+!app/tmr-strava
 !web/*
