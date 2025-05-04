@@ -69,5 +69,13 @@ func (rs *SQLRunnerStore) GetRunnerRuns() []Run {
 	return userRuns
 }
 
-func (i *SQLRunnerStore) RecordRun(r Run) {
+func (rs *SQLRunnerStore) RecordRun(r Run) {
+	time, err := json.Marshal(r.RunTime)
+	if err != nil {
+		return
+	}
+	_, err = rs.handle.Exec("INSERT INTO runs VALUES ($1, $2, $3)", r.Date, r.Distance, time)
+	if err != nil {
+		log.Printf("Error adding run:: %v", err)
+	}
 }
