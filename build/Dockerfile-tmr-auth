@@ -11,6 +11,6 @@ RUN make
 FROM gcr.io/distroless/base-debian12
 WORKDIR /opt/tmr
 COPY web/html ./html
-COPY app/tmr-auth/tmr-auth .
+COPY --from=build app/app/tmr-auth/tmr-auth .
 EXPOSE 5000
 ENTRYPOINT ["./tmr-auth"]
