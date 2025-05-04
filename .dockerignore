@@ -3,3 +3,6 @@
 !app/tmr-auth
 !app/tmr-strava
 !web/*
+!build/*
+!go.mod
+!go.sum

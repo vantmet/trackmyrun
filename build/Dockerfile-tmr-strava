@@ -1,4 +1,15 @@
+FROM golang:1.23 AS build
+
+WORKDIR /app
+COPY go.mod go.sum ./
+RUN go mod download
+COPY app/ ./app/
+COPY build/Makefile ./
+
+RUN make
+
+
 FROM gcr.io/distroless/base-debian12
 WORKDIR /opt/tmr
-COPY app/tmr-strava/tmr-strava .
+COPY --from=build app/app/tmr-strava/tmr-strava .
 ENTRYPOINT ["./tmr-strava"]
