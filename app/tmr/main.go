@@ -12,6 +12,7 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"github.com/vantmet/trackmyrun/internal/runstore"
 )
 
 var Version string
@@ -39,7 +40,7 @@ func main() {
 		}
 	}
 
-	store, err := NewSQLRunerStore()
+	store, err := runstore.NewSQLRunerStore()
 	if err != nil {
 		panic(err)
 	}
