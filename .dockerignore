@@ -6,3 +6,4 @@
 !build/*
 !go.mod
 !go.sum
+!token.json

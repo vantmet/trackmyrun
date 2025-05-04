@@ -12,4 +12,5 @@ RUN make
 FROM gcr.io/distroless/base-debian12
 WORKDIR /opt/tmr
 COPY --from=build app/app/tmr-strava/tmr-strava .
+COPY token.json .
 ENTRYPOINT ["./tmr-strava"]
