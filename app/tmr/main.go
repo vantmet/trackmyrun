@@ -9,6 +9,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	chiprometheus "github.com/jamscloud/chi-prometheus"
+	"github.com/joho/godotenv"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
@@ -28,8 +29,21 @@ func main() {
 
 	log.Println("App Version ", Version, ", registered in Prometheus")
 
-	store := InMemoryRunnerStore{}
-	server := RunnerServer{&store, filepath.FromSlash("html")}
+	// store := InMemoryRunnerStore{}
+	// load env vars
+	// First try to load from the local environemnet
+	if os.Getenv("STRAVA_CLIENT_ID") == "" || os.Getenv("STRAVA_CLIENT_SECRET") == "" {
+		err := godotenv.Load()
+		if err != nil {
+			log.Fatal("Environment not loaded.")
+		}
+	}
+
+	store, err := NewSQLRunerStore()
+	if err != nil {
+		panic(err)
+	}
+	server := RunnerServer{store, filepath.FromSlash("html")}
 
 	r := chi.NewRouter()
 	r.Use(middleware.RequestID)
