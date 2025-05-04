@@ -1,7 +1,17 @@
-FROM ubuntu:latest
+FROM golang:1.23 AS build
+
+WORKDIR /app
+COPY go.mod go.sum ./
+RUN go mod download
+COPY app/ ./app/
+COPY build/Makefile ./
+
+RUN make
+
+
+FROM gcr.io/distroless/base-debian12
 WORKDIR /opt/tmr
 COPY web/html ./html
 COPY app/tmr/tmr .
-RUN apt-get update && apt-get -y install ca-certificates
 EXPOSE 5000
 ENTRYPOINT ["./tmr"]

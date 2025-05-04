@@ -32,9 +32,12 @@ func main() {
 	url := "https://www.strava.com/oauth/token"
 
 	// load env vars
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Environment not loaded.")
+	// First try to load from the local environemnet
+	if os.Getenv("STRAVA_CLIENT_ID") == "" || os.Getenv("STRAVA_CLIENT_SECRET") == "" {
+		err := godotenv.Load()
+		if err != nil {
+			log.Fatal("Environment not loaded.")
+		}
 	}
 
 	//load the TokenCache if available

@@ -8,9 +8,9 @@ COPY build/Makefile ./
 
 RUN make
 
+
 FROM gcr.io/distroless/base-debian12
 WORKDIR /opt/tmr
-COPY web/html ./html
-COPY app/tmr-auth/tmr-auth .
-EXPOSE 5000
-ENTRYPOINT ["./tmr-auth"]
+COPY --from=build app/app/tmr-strava/tmr-strava .
+COPY token.json .
+ENTRYPOINT ["./tmr-strava"]
