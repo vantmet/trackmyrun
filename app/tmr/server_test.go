@@ -9,17 +9,19 @@ import (
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/vantmet/trackmyrun/internal/runstore"
 )
 
 func TestGETRuns(t *testing.T) {
 	const shortForm = "2006-Jan-02"
 	date, _ := time.Parse(shortForm, "2013-Feb-03")
 	store := StubRunStore{
-		[]Run{
+		[]runstore.Run{
 			{
 				Date:     date,
 				Distance: 5420,
-				RunTime:  RunTime{0, 34, 52},
+				RunTime:  runstore.RunTime{Hours: 0, Minutes: 34, Seconds: 52},
 			},
 		},
 		nil,
@@ -66,10 +68,10 @@ func TestGETRuns(t *testing.T) {
 func TestStoreRun(t *testing.T) {
 	const shortForm = "2006-Jan-02"
 	date, _ := time.Parse(shortForm, "2013-Feb-03")
-	run := Run{
+	run := runstore.Run{
 		Date:     date,
 		Distance: 5420,
-		RunTime:  RunTime{0, 34, 52},
+		RunTime:  runstore.RunTime{Hours: 0, Minutes: 34, Seconds: 52},
 	}
 
 	store := StubRunStore{}
@@ -104,20 +106,20 @@ func assertStatus(t testing.TB, got, want int) {
 }
 
 type StubRunStore struct {
-	runs           []Run
+	runs           []runstore.Run
 	recordRunCalls []string
 }
 
-func (s *StubRunStore) GetRunnerRuns() []Run {
+func (s *StubRunStore) GetRunnerRuns() []runstore.Run {
 	return s.runs
 }
 
-func (s *StubRunStore) RecordRun(r Run) {
+func (s *StubRunStore) RecordRun(r runstore.Run) {
 	s.recordRunCalls = append(s.recordRunCalls, "Added")
 	s.runs = append(s.runs, r)
 }
 
-func newPostRunRequest(run Run) *http.Request {
+func newPostRunRequest(run runstore.Run) *http.Request {
 	jRun, _ := json.Marshal(run)
 
 	req, _ := http.NewRequest(http.MethodPost, "/runs", bytes.NewBuffer(jRun))

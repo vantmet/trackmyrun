@@ -6,10 +6,12 @@ import (
 	"path/filepath"
 	"testing"
 	"time"
+
+	"github.com/vantmet/trackmyrun/internal/runstore"
 )
 
 func TestRecordingAndRetrievingRuns(t *testing.T) {
-	store := InMemoryRunnerStore{}
+	store := runstore.InMemoryRunnerStore{}
 	server := RunnerServer{&store, filepath.FromSlash("../../web/html")}
 
 	const shortForm = "2006-Jan-02"
@@ -17,20 +19,20 @@ func TestRecordingAndRetrievingRuns(t *testing.T) {
 	date2, _ := time.Parse(shortForm, "2013-Feb-04")
 	date3, _ := time.Parse(shortForm, "2013-Feb-05")
 
-	run1 := Run{
+	run1 := runstore.Run{
 		Date:     date1,
 		Distance: 5.42,
-		RunTime:  RunTime{0, 34, 52},
+		RunTime:  runstore.RunTime{Hours: 0, Minutes: 34, Seconds: 52},
 	}
-	run2 := Run{
+	run2 := runstore.Run{
 		Date:     date2,
 		Distance: 5.42,
-		RunTime:  RunTime{0, 34, 52},
+		RunTime:  runstore.RunTime{Hours: 0, Minutes: 34, Seconds: 52},
 	}
-	run3 := Run{
+	run3 := runstore.Run{
 		Date:     date3,
 		Distance: 5.42,
-		RunTime:  RunTime{0, 34, 52},
+		RunTime:  runstore.RunTime{Hours: 0, Minutes: 34, Seconds: 52},
 	}
 
 	server.ServeHTTP(httptest.NewRecorder(), newPostRunRequest(run1))
