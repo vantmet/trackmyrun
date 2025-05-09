@@ -1,6 +1,8 @@
 FROM golang:1.23 AS build
 
 WORKDIR /app
+ARG version
+ENV VERSION $version
 COPY go.mod go.sum ./
 RUN go mod download
 COPY app/ ./app/
