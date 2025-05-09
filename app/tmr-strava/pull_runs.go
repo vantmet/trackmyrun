@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/joho/godotenv"
+	"github.com/vantmet/trackmyrun/internal/runstore"
 )
 
 // create a new struct to hold the run data
@@ -18,6 +19,8 @@ type StravaActivity struct {
 	Distance     float64   `json:"distance"`
 	StartDate    time.Time `json:"start_date"`
 	ActivityType string    `json:"type"`
+	MovingTime   int       `json:"moving_time"`
+	ElapsedTime  int       `json:"elapsed_time"`
 }
 
 type StravaToken struct {
@@ -29,6 +32,8 @@ type StravaToken struct {
 
 func main() {
 	var st StravaToken
+	var store runstore.Store
+	var err error
 	url := "https://www.strava.com/oauth/token"
 
 	// load env vars
@@ -37,6 +42,15 @@ func main() {
 		err := godotenv.Load()
 		if err != nil {
 			log.Fatal("Environment not loaded.")
+		}
+	}
+
+	if os.Getenv("TMRENV") == "DEV" {
+		store = &runstore.InMemoryRunnerStore{}
+	} else {
+		store, err = runstore.NewSQLRunerStore()
+		if err != nil {
+			panic(err)
 		}
 	}
 
@@ -70,13 +84,16 @@ func main() {
 	log.Printf("Access Token: valid.")
 	//Write token out to file
 	output, _ := json.MarshalIndent(st, "", "  ")
-
 	err = os.WriteFile("token.json", output, 0644)
-	// get the strava runs
-	runs := getStravaRuns(st.AccessToken)
 
+	// get the strava runs
+	stravaRuns := getStravaRuns(st.AccessToken)
 	// log the number of runs collected
-	log.Printf("Retrieved %d runs.", len(runs))
+	log.Printf("Retrieved %d runs.", len(stravaRuns))
+	runs := convertStravaRuns(stravaRuns)
+	for _, run := range runs {
+		store.RecordRun(run)
+	}
 }
 
 // create a new function to get the strava runs
@@ -134,4 +151,19 @@ func getStravaRuns(token string) []StravaActivity {
 	}
 
 	return runs
+}
+
+func convertStravaRuns(runs []StravaActivity) []runstore.Run {
+	var tmrRuns []runstore.Run
+
+	for _, stravaRun := range runs {
+		rt := runstore.SecondsToRunTime(stravaRun.ElapsedTime)
+		run := runstore.Run{
+			Date:     stravaRun.StartDate,
+			Distance: float32(stravaRun.Distance),
+			RunTime:  rt}
+		tmrRuns = append(tmrRuns, run)
+	}
+
+	return tmrRuns
 }
