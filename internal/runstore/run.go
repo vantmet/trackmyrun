@@ -1,4 +1,4 @@
-package main
+package runstore
 
 import (
 	"fmt"
@@ -6,6 +6,11 @@ import (
 	"strconv"
 	"time"
 )
+
+type Store interface {
+	GetRunnerRuns() []Run
+	RecordRun(Run)
+}
 
 type RunTime struct {
 	Hours   int
@@ -83,3 +88,24 @@ func (r PlanRun) GetRunDateString() string {
 
 	return r.Date.Format(shortForm)
 }
+
+func SecondsToRunTime(seconds int) RunTime {
+	secs := seconds % 60
+	mins := (seconds - secs) % 60
+	var hours int
+	if (seconds - secs - mins) >= 60 {
+		hours = (seconds - secs - mins) / 60
+	} else {
+		hours = 0
+	}
+
+	r := RunTime{Hours: hours, Minutes: mins, Seconds: float32(secs)}
+	return r
+}
+
+/* func SecondsToRunTime(s int) RunTime {
+ 	elapsed := time.Duration(s * int(time.Second))
+
+	return RunTime{Hours: int(elapsed.Hours()), Minutes: int(elapsed.Minutes()), Seconds: float32(elapsed.Seconds())}
+
+}*/

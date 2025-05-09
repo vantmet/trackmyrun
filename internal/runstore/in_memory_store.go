@@ -1,4 +1,4 @@
-package main
+package runstore
 
 type InMemoryRunnerStore struct {
 	runs []Run

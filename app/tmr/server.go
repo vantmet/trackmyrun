@@ -9,11 +9,13 @@ import (
 	"strings"
 	"text/template"
 	"time"
+
+	"github.com/vantmet/trackmyrun/internal/runstore"
 )
 
 type RunnerStore interface {
-	GetRunnerRuns() []Run
-	RecordRun(r Run)
+	GetRunnerRuns() []runstore.Run
+	RecordRun(r runstore.Run)
 }
 
 type RunnerServer struct {
@@ -35,7 +37,7 @@ func (rs *RunnerServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func (rs *RunnerServer) processRun(w http.ResponseWriter, r *http.Request) {
-	var run Run
+	var run runstore.Run
 	if r.Header["Content-Type"][0] == "application/json" {
 		err := json.NewDecoder(r.Body).Decode(&run)
 		log.Printf("%v", run)
@@ -85,7 +87,7 @@ func (rs *RunnerServer) showRuns(w http.ResponseWriter, r *http.Request, success
 
 	data := struct {
 		PageTitle string
-		Runs      []Run
+		Runs      []runstore.Run
 		Status    bool
 		Version   string
 	}{
