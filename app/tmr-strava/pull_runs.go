@@ -157,7 +157,7 @@ func convertStravaRuns(runs []StravaActivity) []runstore.Run {
 	var tmrRuns []runstore.Run
 
 	for _, stravaRun := range runs {
-		rt := runstore.SecondsToRunTime(stravaRun.ElapsedTime)
+		rt := stravaRun.ElapsedTime
 		run := runstore.Run{
 			Date:     stravaRun.StartDate,
 			Distance: float32(stravaRun.Distance),
