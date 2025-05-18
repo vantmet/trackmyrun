@@ -21,7 +21,7 @@ func TestGETRuns(t *testing.T) {
 			{
 				Date:     date,
 				Distance: 5420,
-				RunTime:  runstore.RunTime{Hours: 0, Minutes: 34, Seconds: 52},
+				RunTime:  2092,
 			},
 		},
 		nil,
@@ -56,7 +56,7 @@ func TestGETRuns(t *testing.T) {
 	t.Run("Contains a run", func(t *testing.T) {
 		wants := [4]string{"<td>2013-Feb-03</td>",
 			"<td>5.42km</td>",
-			"<td>0:34:52</td>",
+			"<td>34m52s</td>",
 			"<td>6.43</td>"}
 
 		for _, want := range wants {
@@ -71,7 +71,7 @@ func TestStoreRun(t *testing.T) {
 	run := runstore.Run{
 		Date:     date,
 		Distance: 5420,
-		RunTime:  runstore.RunTime{Hours: 0, Minutes: 34, Seconds: 52},
+		RunTime:  2092,
 	}
 
 	store := StubRunStore{}
