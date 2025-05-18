@@ -14,18 +14,18 @@ func TestRun(t *testing.T) {
 		Description    string
 		Run            Run
 		DistWant       string
-		TimeWant       RunTime
+		TimeWant       int
 		TimeStringWant string
 		PaceWant       string
 		DateWant       string
 	}{
-		{"0Km Run", Run{dateSet, 0, RunTime{0, 4, 1}}, "Invalid Distance", RunTime{0, 4, 1}, "0:4:1", "Invalid Distance", dateWant},
-		{"-10Km Run", Run{dateSet, -10000, RunTime{0, 4, 1}}, "Invalid Distance", RunTime{0, 4, 1}, "0:4:1", "Invalid Distance", dateWant},
-		{"1Km Run", Run{dateSet, 1000, RunTime{0, 4, 1}}, "1km", RunTime{0, 4, 1}, "0:4:1", "4.02", dateWant},
-		{"5Km Run", Run{dateSet, 5000, RunTime{0, 34, 1}}, "5km", RunTime{0, 34, 1}, "0:34:1", "6.80", dateWant},
-		{"5Km Run", Run{dateSet, 5420, RunTime{0, 34, 52}}, "5.42km", RunTime{0, 34, 52}, "0:34:52", "6.43", dateWant},
-		{"10Km Run", Run{dateSet, 10000, RunTime{1, 4, 1}}, "10km", RunTime{1, 4, 1}, "1:4:1", "6.40", dateWant},
-		{"100Km Run", Run{dateSet, 100000, RunTime{36, 4, 1}}, "100km", RunTime{36, 4, 1}, "36:4:1", "21.64", dateWant},
+		{"0Km Run", Run{dateSet, 0, 241}, "Invalid Distance", 241, "4m1s", "Invalid Distance", dateWant},
+		{"-10Km Run", Run{dateSet, -10000, 241}, "Invalid Distance", 241, "4m1s", "Invalid Distance", dateWant},
+		{"1Km Run", Run{dateSet, 1000, 241}, "1km", 241, "4m1s", "4.02", dateWant},
+		{"5Km Run", Run{dateSet, 5000, 2041}, "5km", 2041, "34m1s", "6.80", dateWant},
+		{"5Km Run", Run{dateSet, 5420, 2092}, "5.42km", 2092, "34m52s", "6.43", dateWant},
+		{"10Km Run", Run{dateSet, 10000, 3841}, "10km", 3841, "1h4m1s", "6.40", dateWant},
+		{"100Km Run", Run{dateSet, 100000, 129841}, "100km", 129841, "36h4m1s", "21.64", dateWant},
 	}
 
 	for _, test := range cases {
