@@ -22,17 +22,17 @@ func TestRecordingAndRetrievingRuns(t *testing.T) {
 	run1 := runstore.Run{
 		Date:     date1,
 		Distance: 5.42,
-		RunTime:  runstore.RunTime{Hours: 0, Minutes: 34, Seconds: 52},
+		RunTime:  2094,
 	}
 	run2 := runstore.Run{
 		Date:     date2,
 		Distance: 5.42,
-		RunTime:  runstore.RunTime{Hours: 0, Minutes: 34, Seconds: 52},
+		RunTime:  2094,
 	}
 	run3 := runstore.Run{
 		Date:     date3,
 		Distance: 5.42,
-		RunTime:  runstore.RunTime{Hours: 0, Minutes: 34, Seconds: 52},
+		RunTime:  2094,
 	}
 
 	server.ServeHTTP(httptest.NewRecorder(), newPostRunRequest(run1))

@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"path/filepath"
 	"strconv"
-	"strings"
 	"text/template"
 	"time"
 
@@ -63,17 +62,15 @@ func (rs *RunnerServer) processRun(w http.ResponseWriter, r *http.Request) {
 		fDist, _ := strconv.ParseFloat(fDistString, 32)
 		fDist = fDist * 1000.0 //Convert to meters
 		//Parse runtime
-		chunks := strings.Split(fRunTimeString, ":")
-		fHours, _ := strconv.ParseInt(chunks[0], 10, 32)
-		fMins, _ := strconv.ParseInt(chunks[1], 10, 32)
-		fSecs, _ := strconv.ParseFloat(chunks[2], 32)
+		duration, err := time.ParseDuration(fRunTimeString)
+		if err != nil {
+			log.Printf("Unable to parse time.")
+		}
 
 		//Populate the run
 		run.Date = fDate
 		run.Distance = float32(fDist)
-		run.RunTime.Hours = int(fHours)
-		run.RunTime.Minutes = int(fMins)
-		run.RunTime.Seconds = float32(fSecs)
+		run.RunTime = int(duration)
 		log.Printf("Saved Run: %v", run)
 
 	}
