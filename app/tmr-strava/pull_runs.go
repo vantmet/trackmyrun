@@ -23,17 +23,12 @@ type StravaActivity struct {
 	ElapsedTime  int       `json:"elapsed_time"`
 }
 
-type StravaToken struct {
-	AccessToken  string `json:"access_token"`
-	ExpiresAt    int    `json:"expires_at"`
-	ExpiresIn    int    `json:"expires_in"`
-	RefreshToken string `json:"refresh_token"`
-}
-
 func main() {
-	var st StravaToken
+	var st runstore.StravaToken
 	var store runstore.Store
 	var err error
+	tokenid := 1
+
 	url := "https://www.strava.com/oauth/token"
 
 	// load env vars
@@ -54,22 +49,27 @@ func main() {
 		}
 	}
 
-	//load the TokenCache if available
-	stRaw, err := os.ReadFile("token.json")
+	st, err = store.GetRunnerStravaToken(tokenid)
 	if err != nil {
-		log.Println("Unable to open token.json continuing.")
-		tok := requestAccess()
-		os.Setenv("STRAVA_ACCESS_TOKEN", tok)
-		st, err = exchangeToken(url)
-		if err != nil {
-			log.Fatal(err)
-		}
-	} else {
-		err = json.Unmarshal(stRaw, &st)
-		if err != nil {
-			log.Fatal("Unable to unmarshall token")
-		}
+		panic(err)
 	}
+
+	//load the TokenCache if available
+	// 	stRaw, err := os.ReadFile("token.json")
+	//	if err != nil {
+	//		log.Println("Unable to open token.json continuing.")
+	//		tok := requestAccess()
+	//		os.Setenv("STRAVA_ACCESS_TOKEN", tok)
+	//		st, err = exchangeToken(url)
+	//		if err != nil {
+	//			log.Fatal(err)
+	//		}
+	//	} else {
+	//		err = json.Unmarshal(stRaw, &st)
+	//		if err != nil {
+	//			log.Fatal("Unable to unmarshall token")
+	//		}
+	//	}
 	//st.AccessToken = os.Getenv("STRAVA_ACCESS_TOKEN")
 	convertedTime := time.Unix(int64(st.ExpiresAt), 0)
 	log.Printf("Token Expires: %q", convertedTime)

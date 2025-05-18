@@ -11,6 +11,8 @@ import (
 	"net/http"
 	"os"
 	"strings"
+
+	"github.com/vantmet/trackmyrun/internal/runstore"
 )
 
 type ExchangeToken struct {
@@ -42,7 +44,7 @@ func requestAccess() (access_tok string) {
 }
 
 // create a new function to exchange the access token from access request
-func exchangeToken(baseURL string) (st StravaToken, err error) {
+func exchangeToken(baseURL string) (st runstore.StravaToken, err error) {
 	et := ExchangeToken{
 		StravaClientID:     os.Getenv("STRAVA_CLIENT_ID"),
 		StravaClientSecret: os.Getenv("STRAVA_CLIENT_SECRET"),
@@ -82,7 +84,7 @@ func exchangeToken(baseURL string) (st StravaToken, err error) {
 	}
 
 	// Handle the response...
-	var tokenResponse StravaToken
+	var tokenResponse runstore.StravaToken
 	err = json.Unmarshal([]byte(body.String()), &tokenResponse)
 	if err != nil {
 		log.Fatalf("Error parsing response: %v", err)
@@ -92,7 +94,7 @@ func exchangeToken(baseURL string) (st StravaToken, err error) {
 }
 
 // create a new function to refresh the token
-func getrefreshedToken(baseURL string, refreshToken string) (st StravaToken, err error) {
+func getrefreshedToken(baseURL string, refreshToken string) (st runstore.StravaToken, err error) {
 	userAuth := RefreshToken{
 		StravaClientID:     os.Getenv("STRAVA_CLIENT_ID"),
 		StravaClientSecret: os.Getenv("STRAVA_CLIENT_SECRET"),
@@ -134,7 +136,7 @@ func getrefreshedToken(baseURL string, refreshToken string) (st StravaToken, err
 	log.Printf("Response Body: %s", body)
 
 	// Handle the response...
-	var tokenResponse StravaToken
+	var tokenResponse runstore.StravaToken
 	err = json.Unmarshal(body, &tokenResponse)
 	if err != nil {
 		log.Fatalf("Error parsing response: %v", err)
