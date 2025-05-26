@@ -60,7 +60,7 @@ func (rs *SQLRunnerStore) GetRunnerRuns() []Run {
 		if err := rows.Scan(&run.Date, &run.Distance, &tempTime); err != nil {
 			return userRuns
 		}
-		err = json.Unmarshal([]byte(tempTime), &run.RunTime)
+		err = json.Unmarshal([]byte(tempTime), &run.Runtime)
 		if err != nil {
 			log.Printf("Unable to demarshall runtime: %q", err)
 		}
@@ -70,7 +70,7 @@ func (rs *SQLRunnerStore) GetRunnerRuns() []Run {
 }
 
 func (rs *SQLRunnerStore) RecordRun(r Run) {
-	time, err := json.Marshal(r.RunTime)
+	time, err := json.Marshal(r.Runtime)
 	if err != nil {
 		return
 	}
