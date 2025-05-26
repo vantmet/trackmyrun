@@ -52,8 +52,8 @@ func (rs *RunnerServer) processRun(w http.ResponseWriter, r *http.Request) {
 		//Validation is done in the Javascript for the form. TODO
 		fDateString := r.FormValue("date")
 		fDistString := r.FormValue("distance")
-		fRunTimeString := r.FormValue("runtime")
-		log.Printf("Date: %q, Distance: %q, RunTime: %q", fDateString, fDistString, fRunTimeString)
+		fRuntimeString := r.FormValue("runtime")
+		log.Printf("Date: %q, Distance: %q, Runtime: %q", fDateString, fDistString, fRuntimeString)
 
 		//parse Date
 		const shortForm = "2006-01-02T15:04"
@@ -62,15 +62,15 @@ func (rs *RunnerServer) processRun(w http.ResponseWriter, r *http.Request) {
 		fDist, _ := strconv.ParseFloat(fDistString, 32)
 		fDist = fDist * 1000.0 //Convert to meters
 		//Parse runtime
-		duration, err := time.ParseDuration(fRunTimeString)
+		duration, err := time.ParseDuration(fRuntimeString)
 		if err != nil {
 			log.Printf("Unable to parse time.")
 		}
 
 		//Populate the run
 		run.Date = fDate
-		run.Distance = float32(fDist)
-		run.RunTime = int(duration)
+		run.Distance = fDist
+		run.Runtime = int32(duration)
 		log.Printf("Saved Run: %v", run)
 
 	}

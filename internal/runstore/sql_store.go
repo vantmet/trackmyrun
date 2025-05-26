@@ -1,20 +1,21 @@
 package runstore
 
 import (
-	"database/sql"
-	"encoding/json"
+	"context"
 	"fmt"
 	"log"
 	"os"
 
-	_ "github.com/lib/pq"
+	"github.com/jackc/pgx/v5"
 )
 
 type SQLRunnerStore struct {
-	handle *sql.DB
+	handle *Queries
+	ctx    context.Context
 }
 
 func NewSQLRunerStore() (*SQLRunnerStore, error) {
+	ctx := context.Background()
 	psqlInfo := fmt.Sprintf(
 		"host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
 		os.Getenv("TMRDBHOST"),
@@ -24,58 +25,43 @@ func NewSQLRunerStore() (*SQLRunnerStore, error) {
 		os.Getenv("TMRDBNAME"),
 	)
 
-	db, err := sql.Open("postgres", psqlInfo)
+	conn, err := pgx.Connect(ctx, psqlInfo)
 	if err != nil {
 		return &SQLRunnerStore{}, err
 	}
-	// defer db.Close()
+	defer conn.Close(ctx)
 
-	err = db.Ping()
+	queries := New(conn)
+
+	schemaVersion, err := queries.GetSchemaVersion(ctx)
 	if err != nil {
 		return &SQLRunnerStore{}, err
 	}
 
-	_, err = db.Exec(`CREATE TABLE IF NOT EXISTS runs(
-		date TIMESTAMPTZ NOT NULL,
-		distance float(32) NOT NULL,
-		runtime VARCHAR NOT NULL
-	)`)
-	if err != nil {
-		return &SQLRunnerStore{}, fmt.Errorf("could not create table: %w", err)
+	if (schemaVersion.Version) <= int32(4) {
+		log.Println("Incorrect DB Schema")
+		return &SQLRunnerStore{}, err
 	}
-	return &SQLRunnerStore{handle: db}, nil
+	return &SQLRunnerStore{handle: queries, ctx: ctx}, nil
 }
 
 func (rs *SQLRunnerStore) GetRunnerRuns() []Run {
-	userRuns := []Run{}
-	rows, err := rs.handle.Query("SELECT * FROM runs")
-	defer rows.Close()
+	userRuns, err := rs.handle.GetRuns(rs.ctx)
 	if err != nil {
-		log.Printf("Select Failed: %q", err)
-		return []Run{}
-	}
-	for rows.Next() {
-		var run Run
-		var tempTime string
-		if err := rows.Scan(&run.Date, &run.Distance, &tempTime); err != nil {
-			return userRuns
-		}
-		err = json.Unmarshal([]byte(tempTime), &run.RunTime)
-		if err != nil {
-			log.Printf("Unable to demarshall runtime: %q", err)
-		}
-		userRuns = append(userRuns, run)
+		log.Printf("Unable to get runs: %q", err)
 	}
 	return userRuns
 }
 
 func (rs *SQLRunnerStore) RecordRun(r Run) {
-	time, err := json.Marshal(r.RunTime)
+	run, err := rs.handle.CreateRun(rs.ctx, CreateRunParams{
+		Date:     r.Date,
+		Distance: r.Distance,
+		Runtime:  r.Runtime})
 	if err != nil {
-		return
+		log.Printf("Unable to save run: %q", err)
 	}
-	_, err = rs.handle.Exec("INSERT INTO runs VALUES ($1, $2, $3)", r.Date, r.Distance, time)
-	if err != nil {
-		log.Printf("Error adding run:: %v", err)
+	if run != r {
+		log.Printf("Unable to save run: %q", err)
 	}
 }

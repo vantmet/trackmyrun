@@ -160,8 +160,8 @@ func convertStravaRuns(runs []StravaActivity) []runstore.Run {
 		rt := stravaRun.ElapsedTime
 		run := runstore.Run{
 			Date:     stravaRun.StartDate,
-			Distance: float32(stravaRun.Distance),
-			RunTime:  rt}
+			Distance: stravaRun.Distance,
+			Runtime:  int32(rt)}
 		tmrRuns = append(tmrRuns, run)
 	}
 

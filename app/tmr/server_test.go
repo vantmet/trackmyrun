@@ -21,7 +21,7 @@ func TestGETRuns(t *testing.T) {
 			{
 				Date:     date,
 				Distance: 5420,
-				RunTime:  2092,
+				Runtime:  2092,
 			},
 		},
 		nil,
@@ -71,7 +71,7 @@ func TestStoreRun(t *testing.T) {
 	run := runstore.Run{
 		Date:     date,
 		Distance: 5420,
-		RunTime:  2092,
+		Runtime:  2092,
 	}
 
 	store := StubRunStore{}
