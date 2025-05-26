@@ -18,4 +18,8 @@ sql:
             go_type:
               import: "time"
               type: "Time"
+          - db_type: "pg_catalog.int8"
+            nullable: true
+            go_type: 
+              type: "int32"
 

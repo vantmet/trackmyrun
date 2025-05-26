@@ -18,7 +18,7 @@ type Run struct {
 }
 
 type SchemaMigration struct {
-	Version pgtype.Int8 `json:"version"`
+	Version int32       `json:"version"`
 	Dirty   pgtype.Bool `json:"dirty"`
 }
 
