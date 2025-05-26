@@ -27,7 +27,7 @@ func TestRecordingAndRetrievingRuns(t *testing.T) {
 	run2 := runstore.Run{
 		Date:     date2,
 		Distance: 5.42,
-		Runtime:  2094,
+    Runtime:  2094,
 	}
 	run3 := runstore.Run{
 		Date:     date3,

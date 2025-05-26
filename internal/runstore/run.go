@@ -12,12 +12,6 @@ type Store interface {
 	RecordRun(Run)
 }
 
-/*type Run struct {
-	Date     time.Time
-	Distance float32 //All distances stored in m.
-	Runtime  int     //All times stored in seconds.
-}*/
-
 type PlanRun struct {
 	Date     time.Time
 	Distance float32 //All distances stored in m.
@@ -57,8 +51,8 @@ func (r Run) GetRunPace() string {
 	if r.Distance > 0 {
 		// Pace is minutes per Km.
 		kmDistance := float64(r.Distance) / 1000.0
-
 		pace := float64(r.Runtime) / float64(kmDistance) // pace in secs/km
+
 		//divide pace by 60 to give pace in min.
 		return strconv.FormatFloat(pace/60, 'f', 2, 64)
 	} else {
