@@ -8,6 +8,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/joho/godotenv"
 	"github.com/vantmet/trackmyrun/internal/runstore"
 )
@@ -27,7 +28,7 @@ func main() {
 	var st runstore.StravaToken
 	var store runstore.Store
 	var err error
-	tokenid := 1
+	tokenid, _ := uuid.Parse("891b5b6d-ee44-4dd4-b288-81ee766338c5")
 
 	url := "https://www.strava.com/oauth/token"
 

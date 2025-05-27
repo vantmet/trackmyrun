@@ -24,7 +24,7 @@ type SchemaMigration struct {
 
 type StravaToken struct {
 	ID           uuid.UUID `json:"id"`
-	AcessToken   string    `json:"acess_token"`
+	AccessToken  string    `json:"access_token"`
 	ExpiresAt    int32     `json:"expires_at"`
 	RefreshToken string    `json:"refresh_token"`
 }

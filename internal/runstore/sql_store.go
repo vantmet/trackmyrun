@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 
+	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 )
 
@@ -13,6 +14,8 @@ type SQLRunnerStore struct {
 	handle *Queries
 	ctx    context.Context
 }
+
+const targetSchemaVersion = 3
 
 func NewSQLRunerStore() (*SQLRunnerStore, error) {
 	ctx := context.Background()
@@ -38,7 +41,7 @@ func NewSQLRunerStore() (*SQLRunnerStore, error) {
 		return &SQLRunnerStore{}, err
 	}
 
-	if (schemaVersion.Version) <= int32(4) {
+	if (schemaVersion.Version) < int32(targetSchemaVersion) {
 		log.Println("Incorrect DB Schema")
 		return &SQLRunnerStore{}, err
 	}
@@ -66,61 +69,6 @@ func (rs *SQLRunnerStore) RecordRun(r Run) {
 	}
 }
 
-func (rs *SQLRunnerStore) GetRunnerStravaToken(userid int) (StravaToken, error) {
-	var token StravaToken
-	var id int
-	sqlStatement := `SELECT * from strava_tokens WHERE token_id=$1;`
-
-	row := rs.handle.QueryRow(sqlStatement, userid)
-	switch err := row.Scan(
-		&id,
-		&token.AccessToken,
-		&token.ExpiresAt,
-		&token.ExpiresIn,
-		&token.RefreshToken,
-	); err {
-	case sql.ErrNoRows:
-		log.Printf("Select Failed: %q", err)
-		return token, nil
-	case nil:
-		return token, nil
-	default:
-		panic(err)
-	}
-}
-
-func setupTables(db *sql.DB) error {
-	var err error
-	// Runs table
-	_, err = db.Exec(`CREATE TABLE IF NOT EXISTS runs(
-		date TIMESTAMPTZ NOT NULL,
-		distance float(32) NOT NULL,
-		runtime VARCHAR NOT NULL
-	)`)
-	if err != nil {
-		return fmt.Errorf("could not create table runs: %w", err)
-	}
-
-	// Users Table
-	_, err = db.Exec(`CREATE TABLE IF NOT EXISTS users(
-		user_id INT GENERATED ALWAYS AS IDENTITY,
-		strava_token INT
-	)`)
-	if err != nil {
-		return fmt.Errorf("could not create table users: %w", err)
-	}
-
-	//Strava Token Table
-	_, err = db.Exec(`CREATE TABLE IF NOT EXISTS strava_tokens(
-		token_id INT GENERATED ALWAYS AS IDENTITY,
-		access_token VARCHAR NOT NULL,
-		expires_at INT NOT NULL,
-		expires_in INT NOT NULL,
-		refresh_token VARCHAR NOT NULL
-	)`)
-	if err != nil {
-		return fmt.Errorf("could not create table strava_tokens: %w", err)
-	}
-
-	return nil
+func (rs *SQLRunnerStore) GetRunnerStravaToken(userid uuid.UUID) (StravaToken, error) {
+	return rs.handle.GetStravaToken(rs.ctx, userid)
 }
