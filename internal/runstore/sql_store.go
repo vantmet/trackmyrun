@@ -5,9 +5,11 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type SQLRunnerStore struct {
@@ -17,9 +19,14 @@ type SQLRunnerStore struct {
 
 const targetSchemaVersion = 3
 
-func NewSQLRunerStore() (*SQLRunnerStore, error) {
-	ctx := context.Background()
-	psqlInfo := fmt.Sprintf(
+func Config() *pgxpool.Config {
+	const defaultMaxConns = int32(4)
+	const defaultMinConns = int32(0)
+	const defaultMaxConnLifetime = time.Hour
+	const defaultMaxConnIdleTime = time.Minute * 30
+	const defaultHealthCheckPeriod = time.Minute
+	const defaultConnectTimeout = time.Second * 5
+	DATABASE_URL := fmt.Sprintf(
 		"host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
 		os.Getenv("TMRDBHOST"),
 		os.Getenv("TMRDBPORT"),
@@ -28,13 +35,42 @@ func NewSQLRunerStore() (*SQLRunnerStore, error) {
 		os.Getenv("TMRDBNAME"),
 	)
 
-	conn, err := pgx.Connect(ctx, psqlInfo)
+	dbConfig, err := pgxpool.ParseConfig(DATABASE_URL)
+	if err != nil {
+		log.Fatal("Failed to create a config, error: ", err)
+	}
+
+	dbConfig.MaxConns = defaultMaxConns
+	dbConfig.MinConns = defaultMinConns
+	dbConfig.MaxConnLifetime = defaultMaxConnLifetime
+	dbConfig.MaxConnIdleTime = defaultMaxConnIdleTime
+	dbConfig.HealthCheckPeriod = defaultHealthCheckPeriod
+	dbConfig.ConnConfig.ConnectTimeout = defaultConnectTimeout
+
+	dbConfig.BeforeAcquire = func(ctx context.Context, c *pgx.Conn) bool {
+		log.Println("Before acquiring the connection pool to the database!!")
+		return true
+	}
+
+	dbConfig.AfterRelease = func(c *pgx.Conn) bool {
+		log.Println("After releasing the connection pool to the database!!")
+		return true
+	}
+
+	dbConfig.BeforeClose = func(c *pgx.Conn) {
+		log.Println("Closed the connection pool to the database!!")
+	}
+
+	return dbConfig
+}
+
+func NewSQLRunerStore(ctx context.Context) (*SQLRunnerStore, error) {
+	connPool, err := pgxpool.NewWithConfig(ctx, Config())
 	if err != nil {
 		return &SQLRunnerStore{}, err
 	}
-	defer conn.Close(ctx)
 
-	queries := New(conn)
+	queries := New(connPool)
 
 	schemaVersion, err := queries.GetSchemaVersion(ctx)
 	if err != nil {
@@ -45,6 +81,7 @@ func NewSQLRunerStore() (*SQLRunnerStore, error) {
 		log.Println("Incorrect DB Schema")
 		return &SQLRunnerStore{}, err
 	}
+	// defer connPool.Close()
 	return &SQLRunnerStore{handle: queries, ctx: ctx}, nil
 }
 

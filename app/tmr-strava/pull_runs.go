@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"io"
 	"log"
@@ -29,6 +30,7 @@ func main() {
 	var store runstore.Store
 	var err error
 	tokenid, _ := uuid.Parse("891b5b6d-ee44-4dd4-b288-81ee766338c5")
+	ctx := context.Background()
 
 	url := "https://www.strava.com/oauth/token"
 
@@ -44,7 +46,7 @@ func main() {
 	if os.Getenv("TMRENV") == "DEV" {
 		store = &runstore.InMemoryRunnerStore{}
 	} else {
-		store, err = runstore.NewSQLRunerStore()
+		store, err = runstore.NewSQLRunerStore(ctx)
 		if err != nil {
 			panic(err)
 		}
