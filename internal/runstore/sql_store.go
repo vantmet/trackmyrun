@@ -102,7 +102,7 @@ func (rs *SQLRunnerStore) RecordRun(r Run) {
 		log.Printf("Unable to save run: %q", err)
 	}
 	if run != r {
-		log.Printf("Unable to save run: %q", err)
+		log.Printf("Unable to save run: %v isnt: %v", run, r)
 	}
 }
 

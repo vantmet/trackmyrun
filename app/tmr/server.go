@@ -66,11 +66,11 @@ func (rs *RunnerServer) processRun(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Printf("Unable to parse time.")
 		}
-
+		log.Printf("Parsed duration: %d", duration.Seconds())
 		//Populate the run
 		run.Date = fDate
 		run.Distance = fDist
-		run.Runtime = int32(duration)
+		run.Runtime = int32(duration.Seconds())
 		log.Printf("Saved Run: %v", run)
 
 	}
