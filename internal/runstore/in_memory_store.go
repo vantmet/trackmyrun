@@ -1,5 +1,7 @@
 package runstore
 
+import "github.com/google/uuid"
+
 type InMemoryRunnerStore struct {
 	runs []Run
 }
@@ -12,7 +14,7 @@ func (i *InMemoryRunnerStore) RecordRun(r Run) {
 	i.runs = append(i.runs, r)
 }
 
-func (i *InMemoryRunnerStore) GetRunnerStravaToken(userid int) (StravaToken, error) {
-	st := StravaToken{AccessToken: "", ExpiresAt: 0, ExpiresIn: 0, RefreshToken: ""}
+func (i *InMemoryRunnerStore) GetRunnerStravaToken(userid uuid.UUID) (StravaToken, error) {
+	st := StravaToken{}
 	return st, nil
 }

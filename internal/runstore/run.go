@@ -5,10 +5,12 @@ import (
 	"math"
 	"strconv"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 type Store interface {
-	GetRunnerStravaToken(int) (StravaToken, error)
+	GetRunnerStravaToken(uuid.UUID) (StravaToken, error)
 	GetRunnerRuns() []Run
 	RecordRun(Run)
 }
@@ -16,13 +18,6 @@ type Store interface {
 type PlanRun struct {
 	Date     time.Time
 	Distance float32 //All distances stored in m.
-}
-
-type StravaToken struct {
-	AccessToken  string `json:"access_token"`
-	ExpiresAt    int    `json:"expires_at"`
-	ExpiresIn    int    `json:"expires_in"`
-	RefreshToken string `json:"refresh_token"`
 }
 
 func GetDistanceKm(d float64) string {
