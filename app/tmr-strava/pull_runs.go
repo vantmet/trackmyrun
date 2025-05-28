@@ -63,23 +63,6 @@ func main() {
 		}
 	}
 
-	//load the TokenCache if available
-	// 	stRaw, err := os.ReadFile("token.json")
-	//	if err != nil {
-	//		log.Println("Unable to open token.json continuing.")
-	//		tok := requestAccess()
-	//		os.Setenv("STRAVA_ACCESS_TOKEN", tok)
-	//		st, err = exchangeToken(url)
-	//		if err != nil {
-	//			log.Fatal(err)
-	//		}
-	//	} else {
-	//		err = json.Unmarshal(stRaw, &st)
-	//		if err != nil {
-	//			log.Fatal("Unable to unmarshall token")
-	//		}
-	//	}
-	//st.AccessToken = os.Getenv("STRAVA_ACCESS_TOKEN")
 	convertedTime := time.Unix(int64(st.ExpiresAt), 0)
 	log.Printf("Token Expires: %q", convertedTime)
 	if time.Now().Unix() > int64(st.ExpiresAt) {
