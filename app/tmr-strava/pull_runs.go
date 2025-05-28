@@ -54,7 +54,13 @@ func main() {
 
 	st, err = store.GetRunnerStravaToken(tokenid)
 	if err != nil {
-		panic(err)
+		log.Println("Unable to open token.json continuing.")
+		tok := requestAccess()
+		os.Setenv("STRAVA_ACCESS_TOKEN", tok)
+		st, err = exchangeToken(url)
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
 
 	//load the TokenCache if available
