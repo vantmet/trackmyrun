@@ -61,6 +61,10 @@ func main() {
 		if err != nil {
 			log.Fatal(err)
 		}
+		_, err = store.NewRunnerStravaToken(st)
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
 
 	convertedTime := time.Unix(int64(st.ExpiresAt), 0)

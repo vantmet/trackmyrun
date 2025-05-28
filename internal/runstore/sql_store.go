@@ -106,6 +106,14 @@ func (rs *SQLRunnerStore) RecordRun(r Run) {
 	}
 }
 
-func (rs *SQLRunnerStore) GetRunnerStravaToken(userid uuid.UUID) (StravaToken, error) {
-	return rs.handle.GetStravaToken(rs.ctx, userid)
+func (rs *SQLRunnerStore) GetRunnerStravaToken(tokenid uuid.UUID) (StravaToken, error) {
+	return rs.handle.GetStravaToken(rs.ctx, tokenid)
+}
+
+func (rs *SQLRunnerStore) NewRunnerStravaToken(token StravaToken) (StravaToken, error) {
+	return rs.handle.NewStravaToken(rs.ctx, NewStravaTokenParams(token))
+}
+
+func (rs *SQLRunnerStore) UpdateRunnerStravaToken(token StravaToken) (StravaToken, error) {
+	return rs.handle.StoreStravaToken(rs.ctx, StoreStravaTokenParams(token))
 }
