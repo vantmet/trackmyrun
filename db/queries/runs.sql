@@ -1,6 +1,9 @@
 -- name: GetRuns :many
 SELECT * FROM runs;
 
+-- name: GetLastRun :one
+SELECT * FROM runs ORDER BY date DESC LIMIT 1;
+
 -- name: CreateRun :one
 INSERT into runs (
 	date, 

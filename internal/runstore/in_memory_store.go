@@ -28,3 +28,7 @@ func (i *InMemoryRunnerStore) UpdateRunnerStravaToken(token StravaToken) (Strava
 	st := StravaToken{}
 	return st, nil
 }
+
+func (i *InMemoryRunnerStore) GetLastRunnerRun() (Run, error) {
+	return i.runs[len(i.runs)], nil
+}

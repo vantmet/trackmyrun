@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"reflect"
 	"time"
 
 	"github.com/google/uuid"
@@ -101,7 +102,7 @@ func (rs *SQLRunnerStore) RecordRun(r Run) {
 	if err != nil {
 		log.Printf("Unable to save run: %q", err)
 	}
-	if run != r {
+	if reflect.DeepEqual(r, run) {
 		log.Printf("Unable to save run: %v isnt: %v", run, r)
 	}
 }
@@ -116,4 +117,8 @@ func (rs *SQLRunnerStore) NewRunnerStravaToken(token StravaToken) (StravaToken, 
 
 func (rs *SQLRunnerStore) UpdateRunnerStravaToken(token StravaToken) (StravaToken, error) {
 	return rs.handle.StoreStravaToken(rs.ctx, StoreStravaTokenParams(token))
+}
+
+func (rs *SQLRunnerStore) GetLastRunnerRun() (Run, error) {
+	return rs.handle.GetLastRun(rs.ctx)
 }
