@@ -72,15 +72,17 @@ func main() {
 	if time.Now().Unix() > int64(st.ExpiresAt) {
 		log.Println("Token Expired, refreshing...")
 		st, err = getrefreshedToken(url, st.RefreshToken)
+		st.ID = tokenid
+		_, err = store.UpdateRunnerStravaToken(st)
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	log.Printf("Access Token: valid.")
-	//Write token out to file
-	output, _ := json.MarshalIndent(st, "", "  ")
-	err = os.WriteFile("token.json", output, 0644)
 
 	// get the strava runs
 	stravaRuns := getStravaRuns(st.AccessToken)
