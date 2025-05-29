@@ -61,7 +61,8 @@ func (q *Queries) NewStravaToken(ctx context.Context, arg NewStravaTokenParams) 
 }
 
 const storeStravaToken = `-- name: StoreStravaToken :one
-UPDATE strava_tokens SET access_token=$2, expires_at=$3, refresh_token=$4
+UPDATE strava_tokens SET 
+access_token=$2, expires_at=$3, refresh_token=$4
 WHERE id=$1
 RETURNING id, access_token, expires_at, refresh_token
 `
