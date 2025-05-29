@@ -34,6 +34,17 @@ func (q *Queries) CreateRun(ctx context.Context, arg CreateRunParams) (Run, erro
 	return i, err
 }
 
+const getLastRun = `-- name: GetLastRun :one
+SELECT date, distance, runtime FROM runs ORDER BY date DESC LIMIT 1
+`
+
+func (q *Queries) GetLastRun(ctx context.Context) (Run, error) {
+	row := q.db.QueryRow(ctx, getLastRun)
+	var i Run
+	err := row.Scan(&i.Date, &i.Distance, &i.Runtime)
+	return i, err
+}
+
 const getRuns = `-- name: GetRuns :many
 SELECT date, distance, runtime FROM runs
 `

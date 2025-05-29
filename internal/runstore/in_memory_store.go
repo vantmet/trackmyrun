@@ -18,3 +18,17 @@ func (i *InMemoryRunnerStore) GetRunnerStravaToken(userid uuid.UUID) (StravaToke
 	st := StravaToken{}
 	return st, nil
 }
+
+func (i *InMemoryRunnerStore) NewRunnerStravaToken(token StravaToken) (StravaToken, error) {
+	st := StravaToken{}
+	return st, nil
+}
+
+func (i *InMemoryRunnerStore) UpdateRunnerStravaToken(token StravaToken) (StravaToken, error) {
+	st := StravaToken{}
+	return st, nil
+}
+
+func (i *InMemoryRunnerStore) GetLastRunnerRun() (Run, error) {
+	return i.runs[len(i.runs)], nil
+}

@@ -12,11 +12,75 @@ import (
 )
 
 const getStravaToken = `-- name: GetStravaToken :one
-SELECT id, access_token, expires_at, refresh_token FROm strava_tokens WHERE id=$1
+SELECT id, access_token, expires_at, refresh_token FROM strava_tokens WHERE id=$1
 `
 
 func (q *Queries) GetStravaToken(ctx context.Context, id uuid.UUID) (StravaToken, error) {
 	row := q.db.QueryRow(ctx, getStravaToken, id)
+	var i StravaToken
+	err := row.Scan(
+		&i.ID,
+		&i.AccessToken,
+		&i.ExpiresAt,
+		&i.RefreshToken,
+	)
+	return i, err
+}
+
+const newStravaToken = `-- name: NewStravaToken :one
+INSERT INTO strava_tokens (
+	id, access_token, expires_at, refresh_token
+	) VALUES (
+	$1,$2,$3,$4
+	)
+RETURNING id, access_token, expires_at, refresh_token
+`
+
+type NewStravaTokenParams struct {
+	ID           uuid.UUID `json:"id"`
+	AccessToken  string    `json:"access_token"`
+	ExpiresAt    int32     `json:"expires_at"`
+	RefreshToken string    `json:"refresh_token"`
+}
+
+func (q *Queries) NewStravaToken(ctx context.Context, arg NewStravaTokenParams) (StravaToken, error) {
+	row := q.db.QueryRow(ctx, newStravaToken,
+		arg.ID,
+		arg.AccessToken,
+		arg.ExpiresAt,
+		arg.RefreshToken,
+	)
+	var i StravaToken
+	err := row.Scan(
+		&i.ID,
+		&i.AccessToken,
+		&i.ExpiresAt,
+		&i.RefreshToken,
+	)
+	return i, err
+}
+
+const storeStravaToken = `-- name: StoreStravaToken :one
+UPDATE strava_tokens SET 
+access_token=$2, expires_at=$3, refresh_token=$4
+WHERE id=$1
+RETURNING id, access_token, expires_at, refresh_token
+`
+
+type StoreStravaTokenParams struct {
+	ID           uuid.UUID `json:"id"`
+	AccessToken  string    `json:"access_token"`
+	ExpiresAt    int32     `json:"expires_at"`
+	RefreshToken string    `json:"refresh_token"`
+}
+
+func (q *Queries) StoreStravaToken(ctx context.Context, arg StoreStravaTokenParams) (StravaToken, error) {
+	row := q.db.QueryRow(ctx, storeStravaToken,
+		arg.ID,
+		arg.AccessToken,
+		arg.ExpiresAt,
+		arg.RefreshToken,
+	)
 	var i StravaToken
 	err := row.Scan(
 		&i.ID,

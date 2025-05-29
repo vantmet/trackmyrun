@@ -12,7 +12,10 @@ import (
 type Store interface {
 	GetRunnerStravaToken(uuid.UUID) (StravaToken, error)
 	GetRunnerRuns() []Run
+	GetLastRunnerRun() (Run, error)
 	RecordRun(Run)
+	NewRunnerStravaToken(StravaToken) (StravaToken, error)
+	UpdateRunnerStravaToken(StravaToken) (StravaToken, error)
 }
 
 type PlanRun struct {
