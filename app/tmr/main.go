@@ -59,6 +59,10 @@ func main() {
 	r.Use(middleware.Recoverer)
 
 	r.Handle("/metrics", promhttp.Handler())
+	r.Handle("/static/*", http.StripPrefix("/static/", http.FileServer(http.Dir("./html/static"))))
+	r.Get("/favicon.ico", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, filepath.FromSlash("html/static/favicon.ico"))
+	})
 	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("welcome"))
 	})

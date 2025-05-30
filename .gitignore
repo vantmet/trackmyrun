@@ -29,3 +29,6 @@ app/tmr/tmr
 app/tmr-auth/tmr-auth
 .env
 token.json
+
+# Ignore the node_modules folder as that is loaded locally
+node_modules/*
