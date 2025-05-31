@@ -98,7 +98,10 @@ func (rs *SQLRunnerStore) RecordRun(r Run) {
 	run, err := rs.handle.CreateRun(rs.ctx, CreateRunParams{
 		Date:     r.Date,
 		Distance: r.Distance,
-		Runtime:  r.Runtime})
+		Runtime:  r.Runtime,
+		Type:     r.Type,
+		Name:     r.Name,
+	})
 	if err != nil {
 		log.Printf("Unable to save run: %q", err)
 	}

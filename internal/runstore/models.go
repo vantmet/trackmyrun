@@ -15,6 +15,8 @@ type Run struct {
 	Date     time.Time `json:"date"`
 	Distance float64   `json:"distance"`
 	Runtime  int32     `json:"runtime"`
+	Type     string    `json:"type"`
+	Name     string    `json:"name"`
 }
 
 type SchemaMigration struct {

@@ -171,7 +171,10 @@ func convertStravaRuns(runs []StravaActivity) []runstore.Run {
 		run := runstore.Run{
 			Date:     stravaRun.StartDate,
 			Distance: stravaRun.Distance,
-			Runtime:  int32(rt)}
+			Runtime:  int32(rt),
+			Type:     stravaRun.ActivityType,
+			Name:     stravaRun.Name,
+		}
 		tmrRuns = append(tmrRuns, run)
 	}
 

@@ -78,3 +78,7 @@ func (r PlanRun) GetRunDateString() string {
 
 	return r.Date.Format(shortForm)
 }
+
+func (r Run) GetRunName() string {
+	return r.Name
+}

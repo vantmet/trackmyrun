@@ -8,8 +8,10 @@ SELECT * FROM runs ORDER BY date DESC LIMIT 1;
 INSERT into runs (
 	date, 
 	distance, 
-	runtime
+	runtime,
+	type,
+	name
 ) values (
-	$1,$2,$3
+	$1,$2,$3,$4,$5
 	)
 	returning *;

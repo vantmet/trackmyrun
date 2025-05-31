@@ -14,39 +14,61 @@ const createRun = `-- name: CreateRun :one
 INSERT into runs (
 	date, 
 	distance, 
-	runtime
+	runtime,
+	type,
+	name
 ) values (
-	$1,$2,$3
+	$1,$2,$3,$4,$5
 	)
-	returning date, distance, runtime
+	returning date, distance, runtime, type, name
 `
 
 type CreateRunParams struct {
 	Date     time.Time `json:"date"`
 	Distance float64   `json:"distance"`
 	Runtime  int32     `json:"runtime"`
+	Type     string    `json:"type"`
+	Name     string    `json:"name"`
 }
 
 func (q *Queries) CreateRun(ctx context.Context, arg CreateRunParams) (Run, error) {
-	row := q.db.QueryRow(ctx, createRun, arg.Date, arg.Distance, arg.Runtime)
+	row := q.db.QueryRow(ctx, createRun,
+		arg.Date,
+		arg.Distance,
+		arg.Runtime,
+		arg.Type,
+		arg.Name,
+	)
 	var i Run
-	err := row.Scan(&i.Date, &i.Distance, &i.Runtime)
+	err := row.Scan(
+		&i.Date,
+		&i.Distance,
+		&i.Runtime,
+		&i.Type,
+		&i.Name,
+	)
 	return i, err
 }
 
 const getLastRun = `-- name: GetLastRun :one
-SELECT date, distance, runtime FROM runs ORDER BY date DESC LIMIT 1
+SELECT date, distance, runtime, type, name FROM runs ORDER BY date DESC LIMIT 1
 `
 
 func (q *Queries) GetLastRun(ctx context.Context) (Run, error) {
 	row := q.db.QueryRow(ctx, getLastRun)
 	var i Run
-	err := row.Scan(&i.Date, &i.Distance, &i.Runtime)
+	err := row.Scan(
+		&i.Date,
+		&i.Distance,
+		&i.Runtime,
+		&i.Type,
+		&i.Name,
+	)
 	return i, err
 }
 
 const getRuns = `-- name: GetRuns :many
-SELECT date, distance, runtime FROM runs LIMIT 10
+SELECT date, distance, runtime, type, name FROM runs LIMIT 10
 `
 
 func (q *Queries) GetRuns(ctx context.Context) ([]Run, error) {
@@ -58,7 +80,13 @@ func (q *Queries) GetRuns(ctx context.Context) ([]Run, error) {
 	var items []Run
 	for rows.Next() {
 		var i Run
-		if err := rows.Scan(&i.Date, &i.Distance, &i.Runtime); err != nil {
+		if err := rows.Scan(
+			&i.Date,
+			&i.Distance,
+			&i.Runtime,
+			&i.Type,
+			&i.Name,
+		); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
