@@ -63,6 +63,7 @@ func main() {
 		if err != nil {
 			log.Fatal(err)
 		}
+		st.ID = tokenid
 		_, err = store.NewRunnerStravaToken(st)
 		if err != nil {
 			log.Fatal(err)

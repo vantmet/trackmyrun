@@ -108,7 +108,7 @@ func getrefreshedToken(baseURL string, refreshToken string) (st runstore.StravaT
 	authStr, _ := json.Marshal(userAuth)
 
 	// Debug: Print the userAuth struct
-	log.Printf("User Auth: %+v", userAuth)
+	log.Printf("User Auth: %+v", string(authStr))
 
 	// create a new http client
 	client := &http.Client{}
