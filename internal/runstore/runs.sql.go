@@ -46,7 +46,7 @@ func (q *Queries) GetLastRun(ctx context.Context) (Run, error) {
 }
 
 const getRuns = `-- name: GetRuns :many
-SELECT date, distance, runtime FROM runs
+SELECT date, distance, runtime FROM runs LIMIT 10
 `
 
 func (q *Queries) GetRuns(ctx context.Context) ([]Run, error) {
