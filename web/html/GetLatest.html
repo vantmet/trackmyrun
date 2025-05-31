@@ -7,39 +7,48 @@
     <link href="./static/output.css" rel="stylesheet">
 </head>
 
-<body>
-    {{if .Status}}
-    <h1>Success</h1>
-    {{end}}
-    <h1>Latest Runs</h1>
-    <table>
-        <tr>
-            <th>Date</th>
-            <th>Distance</th>
-            <th>Time</th>
-            <th>Pace</th>
-        </tr>
-        {{range .Runs}}
-        <tr>
-            <td>{{.GetRunDateString}}</td>
-            <td>{{.GetRunDistanceKm}}</td>
-            <td>{{.GetRuntimeString}}</td>
-            <td>{{.GetRunPace}}</td>
-        </tr>
+<body class="flex flex-col h-screen bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400">
+    <div class="container mx-auto px-4 h-10 ">
+    </div>
+    <div class="container mx-auto px-4 mb-auto h-10 ">
+        {{if .Status}}
+        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Success</h1>
         {{end}}
-    </table>
-    <h1>Submit Run</h1>
-    <form id="newRun" action="/runs" method="post" name="runData">
-        <label for="Date">Run Date</label>
-        <input type="datetime-local" id="date" name="date" required />
-        <label for="Distance">Run Distance</label>
-        <input type="text" id="distance" name="distance" required />
-        <label for="runtime"></label>
-        <input type="text" id="runtime" name="runtime" placeholder="0:34:56.34" required />
+        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Latest Runs</h1>
+        <div class="container mx-auto">
+            <table class="border-separate border-spacing-2 border border-gray-400 dark:border-gray-500">
+                <tr class="bg-gray-100 dark:bg-gray-700">
+                    <th class="bg-gray-100 dark:bg-gray-700">Date</th>
+                    <th class="bg-gray-100 dark:bg-gray-700">Distance</th>
+                    <th class="bg-gray-100 dark:bg-gray-700">Time</th>
+                    <th class="bg-gray-100 dark:bg-gray-700">Pace</th>
+                    <th class="bg-gray-100 dark:bg-gray-700">Name</th>
+                </tr>
+                {{range .Runs}}
+                <tr>
+                    <td class="">{{.GetRunDateString}}</td>
+                    <td class="">{{.GetRunDistanceKm}}</td>
+                    <td class="">{{.GetRuntimeString}}</td>
+                    <td class="">{{.GetRunPace}}</td>
+                </tr>
+                {{end}}
+            </table>
+        </div>
+        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Submit Run</h1>
+        <form id="newRun" action="/runs" method="post" name="runData">
+            <label for="Date">Run Date</label>
+            <input type="datetime-local" id="date" name="date" required />
+            <label for="Distance">Run Distance</label>
+            <input type="text" id="distance" name="distance" required />
+            <label for="runtime"></label>
+            <input type="text" id="runtime" name="runtime" placeholder="0:34:56.34" required />
 
-        <input value="submit" type="submit">
-    </form>
-    <p>Current App Version: {{.Version}}</p>
+            <input value="submit" type="submit">
+        </form>
+    </div>
+    <div class="container mx-auto px-4 h-10 ">
+        <p class="mt-4">Current App Version: {{.Version}}</p>
+    </div>
 </body>
 
 </html>
