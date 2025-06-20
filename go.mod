@@ -10,7 +10,7 @@ require (
 	github.com/aws/constructs-go/constructs/v10 v10.3.0
 	github.com/aws/jsii-runtime-go v1.94.0
 	github.com/go-chi/chi v1.5.4
-	github.com/go-chi/chi/v5 v5.0.8
+	github.com/go-chi/chi/v5 v5.2.2
 	github.com/google/uuid v1.6.0
 	github.com/jackc/pgx/v5 v5.7.5
 	github.com/jamscloud/chi-prometheus v0.0.0-20220916214423-0c05478616b4
