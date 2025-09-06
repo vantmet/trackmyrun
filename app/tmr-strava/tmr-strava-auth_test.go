@@ -4,10 +4,12 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/vantmet/trackmyrun/internal/runstore"
 )
 
 func TestRefreshToken(t *testing.T) {
-	var want StravaToken
+	var want runstore.StravaToken
 	// Mock the ENVVars
 	t.Setenv("STRAVA_CLIENT_ID", "137832987")
 	t.Setenv("STRAVA_CLIENT_SECRET", "somefancysecret")

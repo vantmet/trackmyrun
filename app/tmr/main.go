@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"log"
 	"net/http"
 	"os"
@@ -40,7 +41,8 @@ func main() {
 		}
 	}
 
-	store, err := runstore.NewSQLRunerStore()
+	ctx := context.Background()
+	store, err := runstore.NewSQLRunerStore(ctx)
 	if err != nil {
 		panic(err)
 	}

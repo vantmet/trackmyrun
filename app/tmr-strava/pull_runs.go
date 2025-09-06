@@ -1,13 +1,17 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
+	"fmt"
 	"io"
 	"log"
 	"net/http"
 	"os"
 	"time"
 
+	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5"
 	"github.com/joho/godotenv"
 	"github.com/vantmet/trackmyrun/internal/runstore"
 )
@@ -23,17 +27,13 @@ type StravaActivity struct {
 	ElapsedTime  int       `json:"elapsed_time"`
 }
 
-type StravaToken struct {
-	AccessToken  string `json:"access_token"`
-	ExpiresAt    int    `json:"expires_at"`
-	ExpiresIn    int    `json:"expires_in"`
-	RefreshToken string `json:"refresh_token"`
-}
-
 func main() {
-	var st StravaToken
+	var st runstore.StravaToken
 	var store runstore.Store
 	var err error
+	tokenid, _ := uuid.Parse("891b5b6d-ee44-4dd4-b288-81ee766338c5")
+	ctx := context.Background()
+
 	url := "https://www.strava.com/oauth/token"
 
 	// load env vars
@@ -48,14 +48,13 @@ func main() {
 	if os.Getenv("TMRENV") == "DEV" {
 		store = &runstore.InMemoryRunnerStore{}
 	} else {
-		store, err = runstore.NewSQLRunerStore()
+		store, err = runstore.NewSQLRunerStore(ctx)
 		if err != nil {
 			panic(err)
 		}
 	}
 
-	//load the TokenCache if available
-	stRaw, err := os.ReadFile("token.json")
+	st, err = store.GetRunnerStravaToken(tokenid)
 	if err != nil {
 		log.Println("Unable to open token.json continuing.")
 		tok := requestAccess()
@@ -64,30 +63,31 @@ func main() {
 		if err != nil {
 			log.Fatal(err)
 		}
-	} else {
-		err = json.Unmarshal(stRaw, &st)
+		_, err = store.NewRunnerStravaToken(st)
 		if err != nil {
-			log.Fatal("Unable to unmarshall token")
+			log.Fatal(err)
 		}
 	}
-	//st.AccessToken = os.Getenv("STRAVA_ACCESS_TOKEN")
+
 	convertedTime := time.Unix(int64(st.ExpiresAt), 0)
 	log.Printf("Token Expires: %q", convertedTime)
 	if time.Now().Unix() > int64(st.ExpiresAt) {
 		log.Println("Token Expired, refreshing...")
 		st, err = getrefreshedToken(url, st.RefreshToken)
+		st.ID = tokenid
+		_, err = store.UpdateRunnerStravaToken(st)
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	log.Printf("Access Token: valid.")
-	//Write token out to file
-	output, _ := json.MarshalIndent(st, "", "  ")
-	err = os.WriteFile("token.json", output, 0644)
 
 	// get the strava runs
-	stravaRuns := getStravaRuns(st.AccessToken)
+	stravaRuns := getStravaRuns(store, st.AccessToken)
 	// log the number of runs collected
 	log.Printf("Retrieved %d runs.", len(stravaRuns))
 	runs := convertStravaRuns(stravaRuns)
@@ -97,12 +97,21 @@ func main() {
 }
 
 // create a new function to get the strava runs
-func getStravaRuns(token string) []StravaActivity {
+func getStravaRuns(store runstore.Store, token string) []StravaActivity {
+	var limit string
+	lastrun, err := store.GetLastRunnerRun()
+	if err == pgx.ErrNoRows {
+		limit = ""
+	} else {
+		limit = fmt.Sprintf("?after=%d", lastrun.Date.Unix())
+	}
 
 	// create a new http client
 	client := &http.Client{}
+	base := "https://www.strava.com/api/v3/athlete/activities"
+	lookup := base + limit
 
-	req, err := http.NewRequest("GET", "https://www.strava.com/api/v3/athlete/activities", nil)
+	req, err := http.NewRequest("GET", lookup, nil)
 	if err != nil {
 		log.Println("Error reading request", err)
 		return nil
@@ -160,8 +169,8 @@ func convertStravaRuns(runs []StravaActivity) []runstore.Run {
 		rt := stravaRun.ElapsedTime
 		run := runstore.Run{
 			Date:     stravaRun.StartDate,
-			Distance: float32(stravaRun.Distance),
-			RunTime:  rt}
+			Distance: stravaRun.Distance,
+			Runtime:  int32(rt)}
 		tmrRuns = append(tmrRuns, run)
 	}
 

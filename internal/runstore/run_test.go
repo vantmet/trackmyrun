@@ -42,13 +42,13 @@ func TestRun(t *testing.T) {
 			}
 		})
 		t.Run(test.Description+"Time", func(t *testing.T) {
-			got := test.Run.GetRunTime()
+			got := test.Run.GetRuntime()
 			if got != test.TimeWant {
 				t.Errorf("got %v want %v", got, test.TimeWant)
 			}
 		})
 		t.Run(test.Description+"TimeString", func(t *testing.T) {
-			got := test.Run.GetRunTimeString()
+			got := test.Run.GetRuntimeString()
 			if got != test.TimeStringWant {
 				t.Errorf("got %q want %q", got, test.TimeStringWant)
 			}

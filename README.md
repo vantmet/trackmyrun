@@ -4,3 +4,11 @@
 
 
 An App to track my runs and show how my training plan is going.
+
+## TODO
+
+* Style the front end.
+* Get User Auth Working
+* List runs for current user.
+* Plan-Runs
+* Calendar View

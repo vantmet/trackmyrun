@@ -1,41 +1,44 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<meta charset="UTF-8">
-		<title>{{.PageTitle}}</title>        
-	</head>
-	<body>
-        {{if .Status}}
-            <h1>Success</h1>
-        {{end}}
-        <h1>Latest Runs</h1>
-        <table>
-            <tr>
-                <th>Date</th>
-                <th>Distance</th>
-                <th>Time</th>
-                <th>Pace</th>
-            </tr>
-            {{range .Runs}}
-            <tr>
-                <td>{{.GetRunDateString}}</td>
-                <td>{{.GetRunDistanceKm}}</td>
-                <td>{{.GetRunTimeString}}</td>
-                <td>{{.GetRunPace}}</td>
-            </tr>
-            {{end}}
-        </table>
-        <h1>Submit Run</h1>
-            <form id="newRun" action="/runs" method="post" name="runData">
-            <label for="Date">Run Date</label>
-            <input type="datetime-local" id="date" name="date" required/>
-            <label for="Distance">Run Distance</label>
-            <input type="text" id="distance" name="distance" required/>
-            <label for="runtime"></label>
-            <input type="text" id="runtime" name="runtime" placeholder="0:34:56.34" required/>
 
-            <input value="submit" type="submit">
-        </form>
-        <p>Current App Version: {{.Version}}</p>
-	</body>
+<head>
+    <meta charset="UTF-8">
+    <title>{{.PageTitle}}</title>
+</head>
+
+<body>
+    {{if .Status}}
+    <h1>Success</h1>
+    {{end}}
+    <h1>Latest Runs</h1>
+    <table>
+        <tr>
+            <th>Date</th>
+            <th>Distance</th>
+            <th>Time</th>
+            <th>Pace</th>
+        </tr>
+        {{range .Runs}}
+        <tr>
+            <td>{{.GetRunDateString}}</td>
+            <td>{{.GetRunDistanceKm}}</td>
+            <td>{{.GetRuntimeString}}</td>
+            <td>{{.GetRunPace}}</td>
+        </tr>
+        {{end}}
+    </table>
+    <h1>Submit Run</h1>
+    <form id="newRun" action="/runs" method="post" name="runData">
+        <label for="Date">Run Date</label>
+        <input type="datetime-local" id="date" name="date" required />
+        <label for="Distance">Run Distance</label>
+        <input type="text" id="distance" name="distance" required />
+        <label for="runtime"></label>
+        <input type="text" id="runtime" name="runtime" placeholder="0:34:56.34" required />
+
+        <input value="submit" type="submit">
+    </form>
+    <p>Current App Version: {{.Version}}</p>
+</body>
+
 </html>
